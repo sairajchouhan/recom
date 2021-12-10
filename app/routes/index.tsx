@@ -9,7 +9,7 @@ export let meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="">
+    <div className="flex flex-col">
       <button className="btn">neutral</button>
       <button className="btn btn-primary">primary</button>
       <button className="btn btn-secondary">secondary</button>
