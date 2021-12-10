@@ -8,5 +8,9 @@ export let meta: MetaFunction = () => {
 }
 
 export default function Index() {
-  return <div>hi</div>
+  return (
+    <div className="text-4xl text-slate-700 first-letter:text-7xl">
+      Welcome to Recom
+    </div>
+  )
 }

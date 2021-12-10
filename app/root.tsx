@@ -1,5 +1,4 @@
 import {
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -8,6 +7,18 @@ import {
   ScrollRestoration,
   useCatch,
 } from 'remix'
+
+import type { LinksFunction } from 'remix'
+import styles from './styles/tailwind-prod.css'
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'stylesheet',
+      href: styles,
+    },
+  ]
+}
 
 export default function App() {
   return (
@@ -19,7 +30,6 @@ export default function App() {
   )
 }
 
-// https://remix.run/docs/en/v1/api/conventions#errorboundary
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error)
   return (
@@ -39,7 +49,6 @@ export function ErrorBoundary({ error }: { error: Error }) {
   )
 }
 
-// https://remix.run/docs/en/v1/api/conventions#catchboundary
 export function CatchBoundary() {
   let caught = useCatch()
 
