@@ -9,8 +9,13 @@ export let meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="text-4xl text-slate-700 first-letter:text-7xl">
-      Welcome to Recom
+    <div className="">
+      <button className="btn">neutral</button>
+      <button className="btn btn-primary">primary</button>
+      <button className="btn btn-secondary">secondary</button>
+      <button className="btn btn-accent">accent</button>
+      <button className="btn btn-ghost">ghost</button>
+      <button className="btn btn-link">link</button>
     </div>
   )
 }
