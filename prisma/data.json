@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Mist",
+    "color": "black",
+    "price": 36,
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+  },
+  {
+    "id": 2,
+    "name": "Modus Operandi",
+    "color": "white",
+    "price": 42,
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+  },
+  {
+    "id": 3,
+    "name": "Voyage",
+    "color": "indigo",
+    "price": 36,
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+  },
+  {
+    "id": 4,
+    "name": "Mountains",
+    "color": "black",
+    "price": 36,
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+  },
+  {
+    "id": 5,
+    "name": "Rain",
+    "color": "green",
+    "price": 38,
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+  }
+]
