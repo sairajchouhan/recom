@@ -20,8 +20,12 @@ const Header = () => {
       </div>
       <div className="navbar-end">
         <div>
-          <button className="btn btn-ghost">Login</button>
-          {/* <button className="btn btn-ghost">SignUp</button> */}
+          <Link className="btn btn-ghost" to="/signup">
+            Signup
+          </Link>
+          <Link className="btn btn-ghost" to="/login">
+            Login
+          </Link>
         </div>
         <button className="btn btn-square btn-ghost">
           <UserIcon className="w-6" />

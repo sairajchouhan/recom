@@ -30,7 +30,7 @@ function Document({
   title?: string
 }) {
   return (
-    <html lang="en" data-theme="darcula">
+    <html lang="en" data-theme="dracula">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

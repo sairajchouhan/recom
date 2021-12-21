@@ -4,34 +4,39 @@
     "name": "Mist",
     "color": "black",
     "price": 36,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
+    "url": "/public/images/1.jpg"
   },
   {
     "id": 2,
     "name": "Modus Operandi",
     "color": "white",
     "price": 42,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
+    "url": "/public/images/2.jpg"
   },
   {
     "id": 3,
     "name": "Voyage",
     "color": "indigo",
     "price": 36,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
+    "url": "/public/images/3.jpg"
   },
   {
     "id": 4,
     "name": "Mountains",
     "color": "black",
     "price": 36,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
+    "url": "/public/images/4.jpg"
   },
   {
     "id": 5,
     "name": "Rain",
     "color": "green",
     "price": 38,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
+    "url": "/public/images/5.jpg"
   }
 ]
