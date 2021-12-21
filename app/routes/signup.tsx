@@ -1,16 +1,47 @@
-import { Link } from 'react-router-dom'
+import { Form, json, Link } from 'remix'
+import type { ActionFunction } from 'remix'
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData()
+  const res: Record<string, string> = {}
+
+  for (let item of formData.entries()) {
+    res[item[0]] = item[1] as string
+  }
+
+  if (!res.email) {
+    return json(
+      {
+        email: 'Email is required',
+      },
+      400
+    )
+  }
+  if (!res.password) {
+    return json(
+      {
+        email: 'Password is required',
+      },
+      400
+    )
+  }
+
+  return null
+}
 
 const Signup = () => {
   return (
     <div className="min-h-[90vh]">
-      <div className="w-full mx-auto mt-16 lg:w-1/4">
-        <form className="">
+      <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
+        <Form method="post">
           <div className="form-control">
             <label className="label">
               <span className="label-text">Email</span>
             </label>
             <input
               type="email"
+              name="email"
+              defaultValue={'sairaj2119@gmail.com'}
               placeholder="jhon@gmail.com"
               className="input input-primary input-bordered"
             />
@@ -21,6 +52,8 @@ const Signup = () => {
             </label>
             <input
               type="password"
+              name="password"
+              defaultValue="aunzbedi"
               placeholder="your password"
               className="input input-primary input-bordered"
             />
@@ -28,7 +61,7 @@ const Signup = () => {
           <button type="submit" className="block w-full mt-5 btn btn-primary">
             SignUp
           </button>
-        </form>
+        </Form>
         <div className="mt-4">
           <p className="text-sm text-center">
             Already have an account?{' '}

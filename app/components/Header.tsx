@@ -19,14 +19,12 @@ const Header = () => {
         </div>
       </div>
       <div className="navbar-end">
-        <div>
-          <Link className="btn btn-ghost" to="/signup">
-            Signup
-          </Link>
-          <Link className="btn btn-ghost" to="/login">
-            Login
-          </Link>
-        </div>
+        <Link className="btn btn-ghost" to="/signup">
+          Signup
+        </Link>
+        <Link className="btn btn-ghost" to="/login">
+          Login
+        </Link>
         <button className="btn btn-square btn-ghost">
           <UserIcon className="w-6" />
         </button>
