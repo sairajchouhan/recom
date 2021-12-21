@@ -11,6 +11,7 @@ import {
 import type { LinksFunction } from 'remix'
 import styles from './styles/tailwind-prod.css'
 import Header from './components/Header'
+import Footer from './components/Footer'
 
 export const links: LinksFunction = () => {
   return [
@@ -29,7 +30,7 @@ function Document({
   title?: string
 }) {
   return (
-    <html lang="en" data-theme="dracula">
+    <html lang="en" data-theme="darcula">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -54,6 +55,16 @@ export default function App() {
         <Outlet />
       </Layout>
     </Document>
+  )
+}
+
+function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="recom">
+      <Header />
+      {children}
+      <Footer />
+    </div>
   )
 }
 
@@ -108,14 +119,5 @@ export function CatchBoundary() {
         {message}
       </Layout>
     </Document>
-  )
-}
-
-function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="recom">
-      <Header />
-      {children}
-    </div>
   )
 }
