@@ -10,6 +10,7 @@ import {
 
 import type { LinksFunction } from 'remix'
 import styles from './styles/tailwind-prod.css'
+import Header from './components/Header'
 
 export const links: LinksFunction = () => {
   return [
@@ -18,6 +19,32 @@ export const links: LinksFunction = () => {
       href: styles,
     },
   ]
+}
+
+function Document({
+  children,
+  title,
+}: {
+  children: React.ReactNode
+  title?: string
+}) {
+  return (
+    <html lang="en" data-theme="dracula">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        {title ? <title>{title}</title> : null}
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
+      </body>
+    </html>
+  )
 }
 
 export default function App() {
@@ -84,32 +111,11 @@ export function CatchBoundary() {
   )
 }
 
-function Document({
-  children,
-  title,
-}: {
-  children: React.ReactNode
-  title?: string
-}) {
-  return (
-    <html lang="en" data-theme="dracula">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {title ? <title>{title}</title> : null}
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
-        {process.env.NODE_ENV === 'development' && <LiveReload />}
-      </body>
-    </html>
-  )
-}
-
 function Layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>
+  return (
+    <div className="recom">
+      <Header />
+      {children}
+    </div>
+  )
 }
