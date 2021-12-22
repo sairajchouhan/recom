@@ -7,7 +7,7 @@ import { Link } from 'remix'
 
 const Header = () => {
   return (
-    <div className="px-8 mb-2 shadow-lg navbar bg-neutral text-neutral-content">
+    <div className="mx-8 mb-2 border-b navbar ">
       <div className="px-2 mx-2 navbar-start">
         <Link to="/">
           <span className="text-2xl font-bold">Recom</span>
@@ -15,20 +15,24 @@ const Header = () => {
       </div>
       <div className="hidden px-2 mx-2 navbar-center lg:flex">
         <div className="form-control">
-          <input type="text" placeholder="Search" className="w-96 input" />
+          <input
+            type="text"
+            placeholder="Search"
+            className="h-10 w-96 input input-bordered"
+          />
         </div>
       </div>
-      <div className="navbar-end">
-        <Link className="btn btn-ghost" to="/signup">
-          Signup
+      <div className="navbar-end text-neutral">
+        <Link to="/signup">
+          <button className="btn btn-ghost hover:bg-zinc-100">Signup</button>
         </Link>
-        <Link className="btn btn-ghost" to="/login">
-          Login
+        <Link to="/login">
+          <button className="btn btn-ghost hover:bg-zinc-100">Login</button>
         </Link>
-        <button className="btn btn-square btn-ghost">
+        <button className="btn btn-square btn-ghost hover:bg-zinc-100">
           <UserIcon className="w-6" />
         </button>
-        <button className="btn btn-square btn-ghost">
+        <button className="btn btn-square btn-ghost hover:bg-zinc-100">
           <ShoppingCartIcon className="w-6" />
         </button>
       </div>

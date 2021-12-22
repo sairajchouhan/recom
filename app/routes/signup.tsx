@@ -1,12 +1,13 @@
 import { Form, json, Link } from 'remix'
 import type { ActionFunction } from 'remix'
+import { db } from '~/utils/db.server'
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData()
-  const res: Record<string, string> = {}
+  let res: any = {}
 
   for (let item of formData.entries()) {
-    res[item[0]] = item[1] as string
+    res[item[0]] = item[1]
   }
 
   if (!res.email) {
@@ -26,7 +27,25 @@ export const action: ActionFunction = async ({ request }) => {
     )
   }
 
-  return null
+  const userExists = await db.user.findUnique({
+    where: {
+      email: res.email,
+    },
+  })
+
+  if (userExists) {
+    return json({ email: 'Email is taken, Try another one' }, 400)
+  }
+
+  const user = await db.user.create({
+    data: {
+      email: res.email,
+      password: res.password,
+      first_name: res.email.split('@')[0],
+    },
+  })
+
+  return json({ user }, 201)
 }
 
 const Signup = () => {
