@@ -7,7 +7,7 @@ import { Link } from 'remix'
 
 const Header = () => {
   return (
-    <div className="mx-8 mb-2 border-b navbar ">
+    <div className="mx-10 mb-2 border-b navbar ">
       <div className="px-2 mx-2 navbar-start">
         <Link to="/">
           <span className="text-2xl font-bold">Recom</span>
