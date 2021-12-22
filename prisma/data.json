@@ -5,7 +5,7 @@
     "color": "black",
     "price": 36,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/public/images/1.jpg"
+    "url": "/images/1.jpg"
   },
   {
     "id": 2,
@@ -13,7 +13,7 @@
     "color": "white",
     "price": 42,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/public/images/2.jpg"
+    "url": "/images/2.jpg"
   },
   {
     "id": 3,
@@ -21,7 +21,7 @@
     "color": "indigo",
     "price": 36,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/public/images/3.jpg"
+    "url": "/images/3.jpg"
   },
   {
     "id": 4,
@@ -29,7 +29,7 @@
     "color": "black",
     "price": 36,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/public/images/4.jpg"
+    "url": "/images/4.jpg"
   },
   {
     "id": 5,
@@ -37,6 +37,6 @@
     "color": "green",
     "price": 38,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/public/images/5.jpg"
+    "url": "/images/5.jpg"
   }
 ]

@@ -11,7 +11,7 @@
     "dev:remix": "remix dev",
     "dev:css": "tailwindcss -i ./app/styles/tailwind.css -o ./app/styles/tailwind-prod.css -w",
     "dev": "npm-run-all --parallel dev:*",
-    "clean": "rimraf .cache ./api/build ./public/build",
+    "clean": "rimraf .cache ./api/build ./public/build ./app/styles/tailwind-prod.css",
     "studio": "prisma studio"
   },
   "dependencies": {
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@heroicons/react": "^1.0.5",
     "@remix-run/dev": "^1.1.1",
+    "@tailwindcss/aspect-ratio": "^0.4.0",
     "@types/bcrypt": "^5.0.0",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",

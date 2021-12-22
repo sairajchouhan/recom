@@ -60,9 +60,9 @@ export default function App() {
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="recom">
+    <div className="mx-6 sm:mx-10">
       <Header />
-      {children}
+      <div className="">{children}</div>
       <Footer />
     </div>
   )
