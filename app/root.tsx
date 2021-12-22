@@ -38,7 +38,9 @@ function Document({
         <Meta />
         <Links />
       </head>
-      <body>
+      <body
+        className={process.env.NODE_ENV !== 'production' ? 'debug-screens' : ''}
+      >
         {children}
         <ScrollRestoration />
         <Scripts />

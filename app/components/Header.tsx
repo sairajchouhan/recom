@@ -7,7 +7,7 @@ import { Link } from 'remix'
 
 const Header = () => {
   return (
-    <div className="mb-2 border-b navbar">
+    <header className="mb-2 border-b navbar">
       <div className="px-2 mx-2 navbar-start">
         <Link to="/">
           <span className="text-2xl font-bold">Recom</span>
@@ -42,7 +42,7 @@ const Header = () => {
           <ShoppingCartIcon className="w-6" />
         </button>
       </div>
-    </div>
+    </header>
   )
 }
 

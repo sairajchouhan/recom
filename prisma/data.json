@@ -4,8 +4,15 @@
     "name": "Mist",
     "color": "black",
     "price": 36,
-    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/images/1.jpg"
+    "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-washed & pre-shrunk - Soft 100% ringspun cotton",
+    "url": "/images/1.jpg",
+    "sizes": [
+      { "name": "XS", "inStock": true },
+      { "name": "S", "inStock": true },
+      { "name": "M", "inStock": true },
+      { "name": "L", "inStock": true },
+      { "name": "XL", "inStock": true }
+    ]
   },
   {
     "id": 2,
@@ -13,7 +20,14 @@
     "color": "white",
     "price": 42,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/images/2.jpg"
+    "url": "/images/2.jpg",
+    "sizes": [
+      { "name": "XS", "inStock": true },
+      { "name": "S", "inStock": true },
+      { "name": "M", "inStock": true },
+      { "name": "L", "inStock": true },
+      { "name": "XL", "inStock": true }
+    ]
   },
   {
     "id": 3,
@@ -21,7 +35,14 @@
     "color": "indigo",
     "price": 36,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/images/3.jpg"
+    "url": "/images/3.jpg",
+    "sizes": [
+      { "name": "XS", "inStock": true },
+      { "name": "S", "inStock": true },
+      { "name": "M", "inStock": true },
+      { "name": "L", "inStock": true },
+      { "name": "XL", "inStock": true }
+    ]
   },
   {
     "id": 4,
@@ -29,7 +50,14 @@
     "color": "black",
     "price": 36,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/images/4.jpg"
+    "url": "/images/4.jpg",
+    "sizes": [
+      { "name": "XS", "inStock": true },
+      { "name": "S", "inStock": true },
+      { "name": "M", "inStock": true },
+      { "name": "L", "inStock": true },
+      { "name": "XL", "inStock": true }
+    ]
   },
   {
     "id": 5,
@@ -37,6 +65,13 @@
     "color": "green",
     "price": 38,
     "description": "Cut, sewn, and dyed in Los Angeles, CA, USA - Garment dyed - Pre-shrunk - Soft 100% ringspun cotton - Printed with water-based ink",
-    "url": "/images/5.jpg"
+    "url": "/images/5.jpg",
+    "sizes": [
+      { "name": "XS", "inStock": true },
+      { "name": "S", "inStock": true },
+      { "name": "M", "inStock": true },
+      { "name": "L", "inStock": true },
+      { "name": "XL", "inStock": true }
+    ]
   }
 ]
