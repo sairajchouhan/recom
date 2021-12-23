@@ -24,7 +24,8 @@ function classNames(...classes: any) {
 
 const ProductDetail = () => {
   const data = useLoaderData()
-  console.log(data)
+  console.log(data.product.description)
+  console.log(data.product.description.split('-'))
   const [selectedSize, setSelectedSize] = useState(data.product.sizes[0])
 
   return (
@@ -41,9 +42,15 @@ const ProductDetail = () => {
         </div>
         <div className="col-span-12 px-6 mt-8 space-y-8 md:col-span-6 md:mt-0">
           {/* /1 */}
-          <div className="flex justify-between">
-            <h2 className="text-xl font-semibold">{data.product.name}</h2>
-            <p className="text-xl font-semibold">${data.product.price}</p>
+          <div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">{data.product.name}</h2>
+              <p className="text-xl font-semibold">${data.product.price}</p>
+            </div>
+            <p>
+              {data.product.color.charAt(0).toUpperCase() +
+                data.product.color.slice(1)}
+            </p>
           </div>
           {/* 2 */}
           <div className="flex flex-col ">
@@ -56,7 +63,7 @@ const ProductDetail = () => {
               <RadioGroup.Label className="sr-only">
                 Choose a size
               </RadioGroup.Label>
-              <div className="grid grid-cols-5 gap-4">
+              <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
                 {data.product.sizes.map((size: any) => (
                   <RadioGroup.Option
                     key={size.name}
@@ -64,8 +71,10 @@ const ProductDetail = () => {
                     disabled={!size.inStock}
                     className={({ active }) =>
                       classNames(
-                        'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md p-3 flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6',
-                        active ? 'ring-2 ring-primary' : ''
+                        'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none',
+                        active ? 'ring-2 ring-primary' : '',
+                        'col-span-1',
+                        'py-4 '
                       )
                     }
                   >
@@ -98,9 +107,9 @@ const ProductDetail = () => {
           </div>
           {/* 4 */}
           <div>
-            <h3 className="mb-1 font-medium text-zinc-700">Description</h3>
+            <h3 className="mb-1 font-medium text-zinc-700">Details</h3>
             <ul className="list-disc list-inside">
-              {data.product.description.split('-').map((item: string) => (
+              {data.product.description.split('#').map((item: string) => (
                 <li className="text-zinc-500">{item}</li>
               ))}
             </ul>
