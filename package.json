@@ -15,7 +15,7 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^3.6.0",
+    "@prisma/client": "^3.7.0",
     "@remix-run/react": "^1.1.1",
     "@remix-run/serve": "^1.1.1",
     "@remix-run/vercel": "^1.1.1",
@@ -31,17 +31,18 @@
     "@remix-run/dev": "^1.1.1",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@types/bcrypt": "^5.0.0",
-    "@types/react": "^17.0.37",
+    "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "autoprefixer": "^10.4.0",
-    "daisyui": "^1.16.6",
+    "daisyui": "^1.19.0",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.5",
-    "prisma": "^3.6.0",
+    "prisma": "^3.7.0",
     "rimraf": "^3.0.2",
     "tailwindcss": "^3.0.7",
     "tailwindcss-debug-screens": "^2.2.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "vercel": "^23.1.2"
   },
   "engines": {
     "node": ">=14"
