@@ -1,27 +1,49 @@
-import { Form, json, Link } from 'remix'
+import { Form, json, Link, redirect, useActionData } from 'remix'
 import type { ActionFunction } from 'remix'
 import { db } from '~/utils/db.server'
+import { signup } from '~/utils/session.server'
+
+type LoginActionData = {
+  errors?: Partial<LoginFormFieldypes>
+}
+
+type LoginFormFieldypes = {
+  email: string
+  password: string
+}
+
+const validateEmailPassword = (formData: {
+  email?: string
+  password?: string
+}) => {
+  const errors: {
+    email?: string
+    password?: string
+  } = {}
+
+  if (!formData.email) {
+    errors.email = 'Email is required'
+  }
+  if (!formData.password) {
+    errors.password = 'Password is required'
+  }
+
+  return errors
+}
 
 export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData()
-  let res: any = {}
+  const raw_form_data = await request.formData()
+  let form_data: any = {}
 
-  for (let item of formData.entries()) {
-    res[item[0]] = item[1]
+  for (let item of raw_form_data.entries()) {
+    form_data[item[0]] = item[1]
   }
 
-  if (!res.email) {
-    return json(
+  const errors = validateEmailPassword(form_data)
+  if (Object.keys(errors).length > 0) {
+    return json<LoginActionData>(
       {
-        email: 'Email is required',
-      },
-      400
-    )
-  }
-  if (!res.password) {
-    return json(
-      {
-        email: 'Password is required',
+        errors,
       },
       400
     )
@@ -29,26 +51,32 @@ export const action: ActionFunction = async ({ request }) => {
 
   const userExists = await db.user.findUnique({
     where: {
-      email: res.email,
+      email: form_data.email,
     },
   })
 
   if (userExists) {
-    return json({ email: 'Email is taken, Try another one' }, 400)
+    return json<LoginActionData>(
+      {
+        errors: {
+          email: 'Email is taken, Try another one',
+        },
+      },
+      400
+    )
   }
 
-  const user = await db.user.create({
-    data: {
-      email: res.email,
-      password: res.password,
-      first_name: res.email.split('@')[0],
-    },
+  const user = signup({
+    email: form_data.email,
+    password: form_data.password,
   })
 
-  return json({ user }, 201)
+  return redirect('/')
 }
 
 const Signup = () => {
+  const action_data = useActionData<LoginActionData>()
+
   return (
     <div className="min-h-[90vh]">
       <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
@@ -60,10 +88,14 @@ const Signup = () => {
             <input
               type="email"
               name="email"
-              defaultValue={'sairaj2119@gmail.com'}
               placeholder="jhon@gmail.com"
               className="input input-primary input-bordered"
             />
+            {action_data?.errors?.email ? (
+              <div className="text-sm italic text-red-500">
+                *{action_data.errors.email}
+              </div>
+            ) : null}
           </div>
           <div className="form-control">
             <label className="label">
@@ -72,10 +104,14 @@ const Signup = () => {
             <input
               type="password"
               name="password"
-              defaultValue="aunzbedi"
               placeholder="your password"
               className="input input-primary input-bordered"
             />
+            {action_data?.errors?.password ? (
+              <div className="text-sm italic text-red-500">
+                *{action_data.errors.password}
+              </div>
+            ) : null}
           </div>
           <button type="submit" className="block w-full mt-5 btn btn-primary">
             SignUp
