@@ -1,35 +1,8 @@
-import { Link, Form, json, redirect, useActionData } from 'remix'
+import { Link, Form, json, useActionData } from 'remix'
 import type { ActionFunction } from 'remix'
-import { db } from '~/utils/db.server'
 import { createUserSession, login } from '~/utils/session.server'
-
-type LoginActionData = {
-  errors?: Partial<LoginFormFieldypes>
-}
-
-type LoginFormFieldypes = {
-  email: string
-  password: string
-}
-
-const validateEmailPassword = (formData: {
-  email?: string
-  password?: string
-}) => {
-  const errors: {
-    email?: string
-    password?: string
-  } = {}
-
-  if (!formData.email) {
-    errors.email = 'Email is required'
-  }
-  if (!formData.password) {
-    errors.password = 'Password is required'
-  }
-
-  return errors
-}
+import { validateEmailPassword } from '~/utils/validations'
+import { LoginActionData } from '~/types'
 
 export const action: ActionFunction = async ({ request }) => {
   const raw_form_data = await request.formData()
