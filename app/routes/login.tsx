@@ -26,7 +26,6 @@ export const action: ActionFunction = async ({ request }) => {
     email: form_data.email,
     password: form_data.password,
   })
-  console.log(user)
   if (!user) {
     return json<LoginActionData>(
       {

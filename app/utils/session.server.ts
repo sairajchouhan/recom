@@ -63,28 +63,28 @@ export async function getUserSession(request: Request) {
 }
 
 export async function isUserAuthenticated(request: Request) {
-  return Boolean(await getUserId(request))
+  return Boolean(await getUserIdFromSession(request))
 }
 
 export async function requireUserSession(request: Request) {
   const session = await getUserSession(request)
   const userId = session.get('userId')
   if (!userId || typeof userId !== 'string') {
-    return redirect(`/login`)
+    throw redirect(`/login`)
   }
   return userId
 }
 
-export async function getUserId(request: Request) {
+export async function getUserIdFromSession(request: Request) {
   const session = await getUserSession(request)
   const userId = session.get('userId')
   if (!userId || typeof userId !== 'string') return null
   return userId
 }
 
-export async function getUser(request: Request) {
-  const userId = await getUserId(request)
-  if (typeof userId !== 'string') {
+export async function getAuthUser(request: Request) {
+  const userId = await getUserIdFromSession(request)
+  if (!userId || typeof userId !== 'string') {
     return null
   }
 
