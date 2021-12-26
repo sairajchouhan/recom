@@ -1,17 +1,20 @@
 import {
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
+  useLoaderData,
 } from 'remix'
 
 import type { LinksFunction } from 'remix'
 import styles from './styles/tailwind-prod.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import { isUserAuthenticated } from './utils/session.server'
 
 export const links: LinksFunction = () => {
   return [
@@ -20,6 +23,11 @@ export const links: LinksFunction = () => {
       href: styles,
     },
   ]
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const bool = await isUserAuthenticated(request)
+  return bool
 }
 
 function Document({
@@ -51,19 +59,26 @@ function Document({
 }
 
 export default function App() {
+  const isAuthenticated = useLoaderData()
   return (
     <Document>
-      <Layout>
+      <Layout isAuthenticated={isAuthenticated}>
         <Outlet />
       </Layout>
     </Document>
   )
 }
 
-function Layout({ children }: { children: React.ReactNode }) {
+function Layout({
+  isAuthenticated = false,
+  children,
+}: {
+  isAuthenticated?: boolean
+  children: React.ReactNode
+}) {
   return (
     <div className="mx-6 sm:mx-10">
-      <Header />
+      <Header isAuthenticated={isAuthenticated} />
       <div className="">{children}</div>
       <Footer />
     </div>
