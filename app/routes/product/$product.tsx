@@ -3,16 +3,22 @@ import { LoaderFunction, useLoaderData, useCatch } from 'remix'
 import type {} from 'remix'
 import { RadioGroup } from '@headlessui/react'
 
-import productData from '~/../prisma/data.json'
 import { cls } from '~/utils/helpers'
+import { db } from '~/utils/db.server'
 
-export const loader: LoaderFunction = ({ params }) => {
-  const productId = Number(params.product)
-  if (!productId)
+export const loader: LoaderFunction = async ({ params }) => {
+  const productId = params.product
+  if (!productId) {
     throw new Response('Product not found', {
       status: 404,
     })
-  const product = productData.find((p) => p.id === productId)
+  }
+
+  const product = await db.product.findUnique({
+    where: {
+      id: productId,
+    },
+  })
 
   if (!product) {
     throw new Response('Product not found', {
@@ -30,7 +36,6 @@ const size = ['XS', 'S', 'M', 'L', 'XL']
 const ProductDetailPage = () => {
   const data = useLoaderData()
   const [selectedSize, setSelectedSize] = useState(size[0])
-  console.log(data)
 
   return (
     <div className="min-h-[100vh]">
