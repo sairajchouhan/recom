@@ -4,6 +4,7 @@ import type {} from 'remix'
 import { RadioGroup } from '@headlessui/react'
 
 import productData from '~/../prisma/data.json'
+import { cls } from '~/utils/helpers'
 
 export const loader: LoaderFunction = ({ params }) => {
   const productId = Number(params.product)
@@ -13,20 +14,23 @@ export const loader: LoaderFunction = ({ params }) => {
     })
   const product = productData.find((p) => p.id === productId)
 
+  if (!product) {
+    throw new Response('Product not found', {
+      status: 404,
+    })
+  }
+
   return {
     product,
   }
 }
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(' ')
-}
+const size = ['XS', 'S', 'M', 'L', 'XL']
 
-const ProductDetail = () => {
+const ProductDetailPage = () => {
   const data = useLoaderData()
-  console.log(data.product.description)
-  console.log(data.product.description.split('-'))
-  const [selectedSize, setSelectedSize] = useState(data.product.sizes[0])
+  const [selectedSize, setSelectedSize] = useState(size[0])
+  console.log(data)
 
   return (
     <div className="min-h-[100vh]">
@@ -64,12 +68,12 @@ const ProductDetail = () => {
                 Choose a size
               </RadioGroup.Label>
               <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
-                {['XS', 'S', 'M', 'L', 'XL'].map((size: any) => (
+                {size.map((size: any) => (
                   <RadioGroup.Option
-                    key={size.name}
+                    key={size}
                     value={size}
                     className={({ active }) =>
-                      classNames(
+                      cls(
                         'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none',
                         active ? 'ring-2 ring-primary' : '',
                         'col-span-1',
@@ -79,9 +83,9 @@ const ProductDetail = () => {
                   >
                     {({ active, checked }) => (
                       <>
-                        <RadioGroup.Label as="p">{size.name}</RadioGroup.Label>
+                        <RadioGroup.Label as="p">{size}</RadioGroup.Label>
                         <div
-                          className={classNames(
+                          className={cls(
                             active ? 'border' : 'border-2',
                             checked ? 'border-primary' : 'border-transparent',
                             'absolute -inset-px rounded-md pointer-events-none'
@@ -109,7 +113,9 @@ const ProductDetail = () => {
             <h3 className="mb-1 font-medium text-zinc-700">Details</h3>
             <ul className="list-disc list-inside">
               {data.product.description.split('#').map((item: string) => (
-                <li className="text-zinc-500">{item}</li>
+                <li key={item} className="text-zinc-500">
+                  {item}
+                </li>
               ))}
             </ul>
           </div>
@@ -132,4 +138,8 @@ export const CatchBoundary = () => {
   return <div>Error...</div>
 }
 
-export default ProductDetail
+export const ErrorBoundary = () => {
+  return <div>Someting went wrong</div>
+}
+
+export default ProductDetailPage
