@@ -258,7 +258,7 @@ export const CatchBoundary = () => {
 }
 
 export const ErrorBoundary = (err: any) => {
-  console.log(err)
+  console.error(err)
   return <div>Someting went wrong</div>
 }
 

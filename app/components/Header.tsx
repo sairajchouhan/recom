@@ -3,9 +3,9 @@ import {
   UserIcon,
   LogoutIcon,
 } from '@heroicons/react/outline'
-import { Form, Link, useSubmit } from 'remix'
+import { Form, Link } from 'remix'
 
-const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
+const Header = ({ rootData }: { rootData: any }) => {
   return (
     <header className="mb-2 border-b navbar">
       <div className="px-2 mx-2 navbar-start">
@@ -15,7 +15,7 @@ const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
       </div>
 
       <div className="navbar-end text-neutral">
-        {isAuthenticated ? (
+        {rootData?.isAuthenticated ? (
           <>
             <Form method="post" action="/api/logout" reloadDocument>
               <button
@@ -51,9 +51,9 @@ const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
           title="Cart"
           className="relative btn btn-square btn-ghost hover:bg-zinc-100"
         >
-          {false ? (
+          {rootData?.isAuthenticated && rootData?.cartItemsCount > 0 ? (
             <div className="absolute w-4 h-4 rounded-full bg-primary text-primary-content top-1 right-1">
-              <span className="text-xs">2</span>
+              <span className="text-xs">{rootData?.cartItemsCount}</span>
             </div>
           ) : null}
 

@@ -1,4 +1,5 @@
 import {
+  json,
   Links,
   LiveReload,
   LoaderFunction,
@@ -14,7 +15,13 @@ import type { LinksFunction } from 'remix'
 import styles from './styles/tailwind-prod.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import { isUserAuthenticated } from './utils/server/session.server'
+import {
+  getAuthUser,
+  isUserAuthenticated,
+  logout,
+} from './utils/server/session.server'
+import { db } from './utils/server/db.server'
+import invariant from 'tiny-invariant'
 
 export const links: LinksFunction = () => {
   return [
@@ -27,12 +34,32 @@ export const links: LinksFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const isAuthenticated = await isUserAuthenticated(request)
-  // console.log(
-  //   '*************************',
-  //   isAuthenticated,
-  //   '*************************'
-  // )
-  return isAuthenticated
+  if (isAuthenticated) {
+    const user = await getAuthUser(request)
+    invariant(user, 'User not found')
+    const userCart = await db.userCart.findFirst({
+      where: {
+        userId: user.id,
+      },
+    })
+    if (!userCart) {
+      // TODO: create a user cart, (make a utility function to create cart)
+      return await logout(request)
+    }
+    const cartItemsCount = await db.cartItem.count({
+      where: {
+        userCartId: userCart.id,
+      },
+    })
+    return json({
+      isAuthenticated,
+      cartItemsCount,
+    })
+  }
+
+  return {
+    isAuthenticated,
+  }
 }
 
 function Document({
@@ -64,10 +91,10 @@ function Document({
 }
 
 export default function App() {
-  const isAuthenticated = useLoaderData()
+  const rootLoaderData = useLoaderData()
   return (
     <Document>
-      <Layout isAuthenticated={isAuthenticated}>
+      <Layout rootData={rootLoaderData}>
         <Outlet />
       </Layout>
     </Document>
@@ -75,15 +102,15 @@ export default function App() {
 }
 
 function Layout({
-  isAuthenticated = false,
+  rootData,
   children,
 }: {
-  isAuthenticated?: boolean
+  rootData: any
   children: React.ReactNode
 }) {
   return (
     <div className="mx-6 sm:mx-10">
-      <Header isAuthenticated={isAuthenticated} />
+      <Header rootData={rootData} />
       <div className="">{children}</div>
       <Footer />
     </div>
@@ -94,7 +121,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error)
   return (
     <Document title="Error!">
-      <Layout>
+      <Layout rootData={{}}>
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
@@ -134,7 +161,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
+      <Layout rootData={{}}>
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
