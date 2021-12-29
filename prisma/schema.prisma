@@ -26,9 +26,9 @@ model UserAddress {
   zip            String
   country        String
   user_id        String   @unique
-  user           User     @relation(fields: [user_id], references: [id])
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  user           User     @relation(fields: [user_id], references: [id])
 }
 
 model Product {
@@ -41,6 +41,7 @@ model Product {
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
   category    Category[]
+  cart_item   CartItem?
 }
 
 model Category {
@@ -50,4 +51,26 @@ model Category {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   product     Product[]
+}
+
+model CartItem {
+  id                  String          @id @default(uuid())
+  product_id          String          @unique
+  shopping_session_id String
+  quantity            Int
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+  product             Product         @relation(fields: [product_id], references: [id])
+  session             ShoppingSession @relation(fields: [shopping_session_id], references: [id])
+}
+
+model ShoppingSession {
+  id          String     @id @default(uuid())
+  user_id     String
+  total_price Decimal
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  cart_item   CartItem[]
+
+  @@unique([id, user_id])
 }

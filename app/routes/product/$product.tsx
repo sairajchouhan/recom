@@ -1,10 +1,17 @@
 import { useState } from 'react'
-import { LoaderFunction, useLoaderData, useCatch } from 'remix'
-import type {} from 'remix'
+import {
+  LoaderFunction,
+  ActionFunction,
+  useLoaderData,
+  useCatch,
+  Form,
+  json,
+} from 'remix'
 import { RadioGroup } from '@headlessui/react'
 
-import { cls } from '~/utils/helpers'
+import { cls, createActionObject } from '~/utils/helpers'
 import { db } from '~/utils/db.server'
+import { ActionMethods } from '~/types'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -29,6 +36,24 @@ export const loader: LoaderFunction = async ({ params }) => {
   return {
     product,
   }
+}
+
+export const action: ActionFunction = (args) => {
+  const method = args.request.method as keyof ActionMethods
+
+  const actionObject = createActionObject()
+
+  actionObject.POST = () => {
+    return json({
+      hi: 'there',
+    })
+  }
+
+  if (actionObject.hasOwnProperty(method)) {
+    return actionObject[method](args)
+  }
+
+  return null
 }
 
 const size = ['XS', 'S', 'M', 'L', 'XL']
@@ -105,14 +130,17 @@ const ProductDetailPage = () => {
             </RadioGroup>
           </div>
           {/* 3 */}
-          <div className="grid grid-cols-2 gap-4">
-            <button className="col-span-2 md:col-span-1 btn btn-primary btn-outline">
-              Buy Now
-            </button>
-            <button className="col-span-2 md:col-span-1 btn btn-primary">
-              Add to Cart
-            </button>
-          </div>
+          <Form method="post">
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                name="add_to_cart"
+                type="submit"
+                className="col-span-2 md:col-span-1 btn btn-primary"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </Form>
           {/* 4 */}
           <div>
             <h3 className="mb-1 font-medium text-zinc-700">Details</h3>

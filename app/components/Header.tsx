@@ -25,12 +25,14 @@ const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                 <LogoutIcon className="w-6" />
               </button>
             </Form>
-            <button
-              title="Profile"
-              className="btn btn-square btn-ghost hover:bg-zinc-100"
-            >
-              <UserIcon className="w-6" />
-            </button>
+            <Link to="/account">
+              <button
+                title="Profile"
+                className="btn btn-square btn-ghost hover:bg-zinc-100"
+              >
+                <UserIcon className="w-6" />
+              </button>
+            </Link>
           </>
         ) : (
           <>
@@ -47,8 +49,14 @@ const Header = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
 
         <button
           title="Cart"
-          className="btn btn-square btn-ghost hover:bg-zinc-100"
+          className="relative btn btn-square btn-ghost hover:bg-zinc-100"
         >
+          {false ? (
+            <div className="absolute w-4 h-4 rounded-full bg-primary text-primary-content top-1 right-1">
+              <span className="text-xs">2</span>
+            </div>
+          ) : null}
+
           <ShoppingCartIcon className="w-6" />
         </button>
       </div>
