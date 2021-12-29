@@ -6,12 +6,15 @@ import {
   useCatch,
   Form,
   json,
+  useSubmit,
 } from 'remix'
 import { RadioGroup } from '@headlessui/react'
+import invariant from 'tiny-invariant'
 
 import { cls, createActionObject } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
+import { getAuthUser, requireUserSession } from '~/utils/server/session.server'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -38,19 +41,44 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 }
 
-export const action: ActionFunction = (args) => {
+export const action: ActionFunction = async (args) => {
+  await requireUserSession(args.request)
   const method = args.request.method as keyof ActionMethods
+  const action_object = createActionObject()
 
-  const actionObject = createActionObject()
+  action_object.POST = async ({ request, params }) => {
+    const user = await getAuthUser(request)
+    const raw_form_data = await request.formData()
+    const form_data: Record<string, any> = {}
 
-  actionObject.POST = () => {
+    for (let [key, value] of raw_form_data.entries()) {
+      form_data[key] = value
+    }
+
+    invariant(user, 'User not found')
+    let user_cart = await db.userCart.findFirst({
+      where: {
+        user_id: user.id,
+      },
+    })
+
+    if (!user_cart) {
+      user_cart = await db.userCart.create({
+        data: {
+          user_id: user.id,
+        },
+      })
+    }
+
+    // TODO: understand why typescript is showind product_id as optional in the type
+
     return json({
       hi: 'there',
     })
   }
 
-  if (actionObject.hasOwnProperty(method)) {
-    return actionObject[method](args)
+  if (action_object.hasOwnProperty(method)) {
+    return action_object[method](args)
   }
 
   return null
@@ -60,7 +88,14 @@ const size = ['XS', 'S', 'M', 'L', 'XL']
 
 const ProductDetailPage = () => {
   const data = useLoaderData()
+  const submit = useSubmit()
   const [selectedSize, setSelectedSize] = useState(size[0])
+
+  const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
+    submit(e.currentTarget, {
+      method: 'post',
+    })
+  }
 
   return (
     <div className="min-h-[100vh]">
@@ -87,55 +122,66 @@ const ProductDetailPage = () => {
             </p>
           </div>
           {/* 2 */}
-          <div className="flex flex-col ">
-            <h3 className="mb-1 font-medium text-zinc-700">Size</h3>
-            <RadioGroup
-              value={selectedSize}
-              onChange={setSelectedSize}
-              className=""
-            >
-              <RadioGroup.Label className="sr-only">
-                Choose a size
-              </RadioGroup.Label>
-              <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
-                {size.map((size: any) => (
-                  <RadioGroup.Option
-                    key={size}
-                    value={size}
-                    className={({ active }) =>
-                      cls(
-                        'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none',
-                        active ? 'ring-2 ring-primary' : '',
-                        'col-span-1',
-                        'py-4 '
-                      )
-                    }
-                  >
-                    {({ active, checked }) => (
-                      <>
-                        <RadioGroup.Label as="p">{size}</RadioGroup.Label>
-                        <div
-                          className={cls(
-                            active ? 'border' : 'border-2',
-                            checked ? 'border-primary' : 'border-transparent',
-                            'absolute -inset-px rounded-md pointer-events-none'
-                          )}
-                          aria-hidden="true"
-                        />
-                      </>
-                    )}
-                  </RadioGroup.Option>
-                ))}
-              </div>
-            </RadioGroup>
-          </div>
-          {/* 3 */}
-          <Form method="post">
-            <div className="grid grid-cols-2 gap-4">
+          <Form method="post" onSubmit={handleAddToCart}>
+            <div className="flex flex-col ">
+              <h3 className="mb-1 font-medium text-zinc-700">Size</h3>
+              <RadioGroup
+                as="fieldset"
+                value={selectedSize}
+                onChange={setSelectedSize}
+                className=""
+              >
+                <RadioGroup.Label className="sr-only">
+                  Choose a size
+                </RadioGroup.Label>
+                <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
+                  {size.map((size: any) => (
+                    <RadioGroup.Option
+                      key={size}
+                      value={size}
+                      as="label"
+                      htmlFor={size}
+                      className={({ active }) =>
+                        cls(
+                          'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none',
+                          active ? 'ring-2 ring-primary' : '',
+                          'col-span-1',
+                          'py-4 '
+                        )
+                      }
+                    >
+                      {({ active, checked }) => (
+                        <>
+                          <RadioGroup.Label as="p">{size}</RadioGroup.Label>
+                          <div
+                            className={cls(
+                              active ? 'border' : 'border-2',
+                              checked ? 'border-primary' : 'border-transparent',
+                              'absolute -inset-px rounded-md pointer-events-none'
+                            )}
+                            aria-hidden="true"
+                          />
+                          <input
+                            type="radio"
+                            name="size"
+                            id={size}
+                            value={size}
+                            hidden
+                          />
+                        </>
+                      )}
+                    </RadioGroup.Option>
+                  ))}
+                </div>
+              </RadioGroup>
+            </div>
+            {/* 3 */}
+            <div className="grid grid-cols-2 gap-4 mt-6">
               <button
-                name="add_to_cart"
-                type="submit"
+                name="addToCart"
+                value={'addToCart'}
                 className="col-span-2 md:col-span-1 btn btn-primary"
+                type="submit"
               >
                 Add to Cart
               </button>
@@ -171,7 +217,8 @@ export const CatchBoundary = () => {
   return <div>Error...</div>
 }
 
-export const ErrorBoundary = () => {
+export const ErrorBoundary = (err: any) => {
+  console.log(err)
   return <div>Someting went wrong</div>
 }
 

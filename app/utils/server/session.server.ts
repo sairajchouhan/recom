@@ -94,7 +94,7 @@ export async function getAuthUser(request: Request) {
     })
     return user
   } catch {
-    throw logout(request)
+    throw await logout(request)
   }
 }
 
