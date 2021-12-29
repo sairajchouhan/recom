@@ -1,5 +1,5 @@
 import type { LoaderFunction } from 'remix'
-import { requireUserSession } from '~/utils/session.server'
+import { requireUserSession } from '~/utils/server/session.server'
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request)

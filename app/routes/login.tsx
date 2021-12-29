@@ -1,6 +1,6 @@
 import { Link, Form, json, useActionData } from 'remix'
 import type { ActionFunction } from 'remix'
-import { createUserSession, login } from '~/utils/session.server'
+import { createUserSession, login } from '~/utils/server/session.server'
 import { validateEmailPassword } from '~/utils/validations'
 import { LoginActionData } from '~/types'
 

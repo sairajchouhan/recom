@@ -1,5 +1,9 @@
 import { LoaderFunction, useLoaderData } from 'remix'
-import { getAuthUser, logout, requireUserSession } from '~/utils/session.server'
+import {
+  getAuthUser,
+  logout,
+  requireUserSession,
+} from '~/utils/server/session.server'
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request)

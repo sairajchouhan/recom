@@ -1,7 +1,6 @@
 import { Link, useLoaderData } from 'remix'
 import type { MetaFunction, LoaderFunction } from 'remix'
-import data from '../../prisma/data.json'
-import { db } from '~/utils/db.server'
+import { db } from '~/utils/server/db.server'
 import { Product } from '@prisma/client'
 
 export let meta: MetaFunction = () => {

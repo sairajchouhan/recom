@@ -14,7 +14,7 @@ import type { LinksFunction } from 'remix'
 import styles from './styles/tailwind-prod.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import { isUserAuthenticated } from './utils/session.server'
+import { isUserAuthenticated } from './utils/server/session.server'
 
 export const links: LinksFunction = () => {
   return [

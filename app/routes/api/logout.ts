@@ -1,5 +1,5 @@
-import { ActionFunction, json, redirect } from 'remix'
-import { logout } from '~/utils/session.server'
+import { ActionFunction } from 'remix'
+import { logout } from '~/utils/server/session.server'
 
 export const action: ActionFunction = async ({ request }) => {
   if (request.method === 'POST') {

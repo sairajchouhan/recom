@@ -1,5 +1,5 @@
 import { ActionFunction, json } from 'remix'
-import { ActionMethods, ActionObject } from '~/types'
+import { ActionMethods } from '~/types'
 import { createActionObject } from '~/utils/helpers'
 
 export const action: ActionFunction = (args) => {

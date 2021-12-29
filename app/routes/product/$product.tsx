@@ -10,7 +10,7 @@ import {
 import { RadioGroup } from '@headlessui/react'
 
 import { cls, createActionObject } from '~/utils/helpers'
-import { db } from '~/utils/db.server'
+import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
 
 export const loader: LoaderFunction = async ({ params }) => {

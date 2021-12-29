@@ -1,7 +1,7 @@
 import { Form, json, Link, redirect, useActionData } from 'remix'
 import type { ActionFunction } from 'remix'
-import { db } from '~/utils/db.server'
-import { signup } from '~/utils/session.server'
+import { db } from '~/utils/server/db.server'
+import { signup } from '~/utils/server/session.server'
 import { validateEmailPassword } from '~/utils/validations'
 import { SignupActionData } from '~/types'
 
