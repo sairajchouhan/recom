@@ -20,7 +20,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-[90vh] text-center">
       <h1>{user.email}</h1>
-      <p>{user.first_name}</p>
+      <p>{user.firstName}</p>
     </div>
   )
 }

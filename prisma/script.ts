@@ -24,7 +24,7 @@ const add_products = async () => {
           description: product.description,
           price: product.price,
           color: product.color,
-          url: product.url,
+          imageUrl: product.url,
           category: {
             connect: men_tshirts_category_ids.map((item) => ({ id: item })),
           },
@@ -52,10 +52,12 @@ const add_categories = async () => {
   })
 }
 
-add_products()
-  .then(() => {
-    console.log('✅')
-  })
-  .catch((err) => {
-    console.error(err)
-  })
+;[add_categories, add_products].forEach((func) => {
+  func()
+    .then(() => {
+      console.log('✅')
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+})

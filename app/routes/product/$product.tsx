@@ -44,41 +44,39 @@ export const loader: LoaderFunction = async ({ params }) => {
 export const action: ActionFunction = async (args) => {
   await requireUserSession(args.request)
   const method = args.request.method as keyof ActionMethods
-  const action_object = createActionObject()
+  const actionObject = createActionObject()
 
-  action_object.POST = async ({ request, params }) => {
+  actionObject.POST = async ({ request, params }) => {
     const user = await getAuthUser(request)
-    const raw_form_data = await request.formData()
-    const form_data: Record<string, any> = {}
+    const rawFormData = await request.formData()
+    const formData: Record<string, any> = {}
 
-    for (let [key, value] of raw_form_data.entries()) {
-      form_data[key] = value
+    for (let [key, value] of rawFormData.entries()) {
+      formData[key] = value
     }
 
     invariant(user, 'User not found')
-    let user_cart = await db.userCart.findFirst({
+    let userCart = await db.userCart.findFirst({
       where: {
-        user_id: user.id,
+        userId: user.id,
       },
     })
 
-    if (!user_cart) {
-      user_cart = await db.userCart.create({
-        data: {
-          user_id: user.id,
-        },
-      })
-    }
-
-    // TODO: understand why typescript is showind product_id as optional in the type
+    // if (!userCart) {
+    //   userCart = await db.userCart.create({
+    //     data: {
+    //       userId: user.id,
+    //     },
+    //   })
+    // }
 
     return json({
       hi: 'there',
     })
   }
 
-  if (action_object.hasOwnProperty(method)) {
-    return action_object[method](args)
+  if (actionObject.hasOwnProperty(method)) {
+    return actionObject[method](args)
   }
 
   return null
@@ -103,7 +101,7 @@ const ProductDetailPage = () => {
         <div className="col-span-12 md:col-span-6 ">
           <div className="overflow-hidden rounded-lg aspect-w-4 aspect-h-5">
             <img
-              src={data.product.url}
+              src={data.product.imageUrl}
               alt={data.product.name}
               className="object-cover object-center w-full h-full mx-auto"
             />

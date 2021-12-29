@@ -13,7 +13,7 @@ export async function signup({ email, password }: Temp) {
     data: {
       email,
       password: passwordHash,
-      first_name: email.split('@')[0],
+      firstName: email.split('@')[0],
     },
   })
   return user

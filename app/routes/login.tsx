@@ -5,14 +5,14 @@ import { validateEmailPassword } from '~/utils/validations'
 import { LoginActionData } from '~/types'
 
 export const action: ActionFunction = async ({ request }) => {
-  const raw_form_data = await request.formData()
-  let form_data: any = {}
+  const rawFormData = await request.formData()
+  let formData: any = {}
 
-  for (let item of raw_form_data.entries()) {
-    form_data[item[0]] = item[1]
+  for (let item of rawFormData.entries()) {
+    formData[item[0]] = item[1]
   }
 
-  const errors = validateEmailPassword(form_data)
+  const errors = validateEmailPassword(formData)
   if (Object.keys(errors).length > 0) {
     return json<LoginActionData>(
       {
@@ -23,8 +23,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const user = await login({
-    email: form_data.email,
-    password: form_data.password,
+    email: formData.email,
+    password: formData.password,
   })
   if (!user) {
     return json<LoginActionData>(
@@ -42,7 +42,7 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 const Login = () => {
-  const action_data = useActionData<LoginActionData>()
+  const actionData = useActionData<LoginActionData>()
   return (
     <div className="min-h-[90vh]">
       <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
@@ -57,9 +57,9 @@ const Login = () => {
               placeholder="jhon@gmail.com"
               className="input input-primary input-bordered"
             />
-            {action_data?.errors?.email ? (
+            {actionData?.errors?.email ? (
               <div className="text-sm italic text-red-500">
-                *{action_data.errors.email}
+                *{actionData.errors.email}
               </div>
             ) : null}
           </div>
@@ -73,9 +73,9 @@ const Login = () => {
               placeholder="your password"
               className="input input-primary input-bordered"
             />
-            {action_data?.errors?.password ? (
+            {actionData?.errors?.password ? (
               <div className="text-sm italic text-red-500">
-                *{action_data.errors.password}
+                *{actionData.errors.password}
               </div>
             ) : null}
           </div>
