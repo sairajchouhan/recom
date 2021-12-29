@@ -9,7 +9,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   await requireUserSession(request)
   const user = await getAuthUser(request)
   if (!user) {
-    await logout(request)
+    return await logout(request)
   }
 
   return user

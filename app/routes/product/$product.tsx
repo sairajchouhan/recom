@@ -60,19 +60,60 @@ export const action: ActionFunction = async (args) => {
       where: {
         userId: user.id,
       },
+      select: {
+        id: true,
+      },
     })
 
-    // if (!userCart) {
-    //   userCart = await db.userCart.create({
-    //     data: {
-    //       userId: user.id,
-    //     },
-    //   })
-    // }
+    if (!userCart) {
+      userCart = await db.userCart.create({
+        data: {
+          userId: user.id,
+          totalPrice: 0,
+        },
+      })
+    }
 
-    return json({
-      hi: 'there',
+    const cartItemSearch = await db.cartItem.findMany({
+      where: {
+        productId: params.product as string,
+        userCart: {
+          id: userCart.id,
+        },
+        size: formData.size,
+      },
     })
+
+    if (cartItemSearch.length > 0) {
+      await db.cartItem.update({
+        where: {
+          id: cartItemSearch[0].id,
+        },
+        data: {
+          quantity: {
+            increment: 1,
+          },
+        },
+      })
+    } else {
+      const cartItem = await db.cartItem.create({
+        data: {
+          productId: params.product as string,
+          userCartId: userCart.id,
+          size: formData.size,
+          quantity: 1,
+        },
+      })
+    }
+
+    return json(
+      {
+        addedToCart: true,
+      },
+      {
+        status: 201,
+      }
+    )
   }
 
   if (actionObject.hasOwnProperty(method)) {
@@ -165,6 +206,7 @@ const ProductDetailPage = () => {
                             id={size}
                             value={size}
                             hidden
+                            defaultChecked={size === 'XS'}
                           />
                         </>
                       )}

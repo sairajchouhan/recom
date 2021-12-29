@@ -26,7 +26,13 @@ export const links: LinksFunction = () => {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return await isUserAuthenticated(request)
+  const isAuthenticated = await isUserAuthenticated(request)
+  // console.log(
+  //   '*************************',
+  //   isAuthenticated,
+  //   '*************************'
+  // )
+  return isAuthenticated
 }
 
 function Document({
