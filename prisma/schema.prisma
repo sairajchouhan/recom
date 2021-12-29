@@ -37,6 +37,8 @@ model Product {
   description String
   price       Int
   category_id String
+  color       String?
+  url         String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   category    Category @relation(fields: [category_id], references: [id], onDelete: SetNull)

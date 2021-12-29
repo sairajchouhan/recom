@@ -64,11 +64,10 @@ const ProductDetail = () => {
                 Choose a size
               </RadioGroup.Label>
               <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
-                {data.product.sizes.map((size: any) => (
+                {['XS', 'S', 'M', 'L', 'XL'].map((size: any) => (
                   <RadioGroup.Option
                     key={size.name}
                     value={size}
-                    disabled={!size.inStock}
                     className={({ active }) =>
                       classNames(
                         'bg-white shadow-sm text-gray-900 cursor-pointer group relative border rounded-md flex items-center justify-center text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none',
