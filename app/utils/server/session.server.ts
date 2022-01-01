@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 import { createCookieSessionStorage, redirect } from 'remix'
 import { db } from './db.server'
 
@@ -8,7 +8,7 @@ type Temp = {
 }
 
 export async function signup({ email, password }: Temp) {
-  const passwordHash = await bcrypt.hash(password, 10)
+  const passwordHash = await bcryptjs.hash(password, 10)
   const user = await db.user.create({
     data: {
       email,
@@ -25,7 +25,7 @@ export const login = async ({ email, password }: Temp) => {
   })
   if (!user) return null
 
-  const isCorrectPassword = await bcrypt.compare(password, user.password)
+  const isCorrectPassword = await bcryptjs.compare(password, user.password)
   if (!isCorrectPassword) return null
 
   return user
