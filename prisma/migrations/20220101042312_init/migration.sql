@@ -88,12 +88,6 @@ CREATE TABLE "_CategoryToProduct" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserAddress_userId_key" ON "UserAddress"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CartItem_productId_key" ON "CartItem"("productId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "UserCart_id_userId_key" ON "UserCart"("id", "userId");
 
 -- CreateIndex
