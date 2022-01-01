@@ -22,6 +22,7 @@ import {
 } from './utils/server/session.server'
 import { db } from './utils/server/db.server'
 import invariant from 'tiny-invariant'
+import { createUserCart } from './utils/server/cart.server'
 
 export const links: LinksFunction = () => {
   return [
@@ -37,18 +38,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (isAuthenticated) {
     const user = await getAuthUser(request)
     invariant(user, 'User not found')
-    const userCart = await db.userCart.findFirst({
+    let userCart = await db.userCart.findFirst({
       where: {
         userId: user.id,
       },
     })
     if (!userCart) {
-      // TODO: create a user cart, (make a utility function to create cart)
-      return await logout(request)
+      userCart = await createUserCart({ userId: user.id })
     }
     const cartItemsCount = await db.cartItem.count({
       where: {
-        userCartId: userCart.id,
+        userCartId: userCart?.id,
       },
     })
     return json({

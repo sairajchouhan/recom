@@ -1,9 +1,10 @@
 import { Form, json, Link, redirect, useActionData } from 'remix'
 import type { ActionFunction } from 'remix'
 import { db } from '~/utils/server/db.server'
-import { signup } from '~/utils/server/session.server'
+import { createUserSession, signup } from '~/utils/server/session.server'
 import { validateEmailPassword } from '~/utils/validations'
 import { SignupActionData } from '~/types'
+import { createUserCart } from '~/utils/server/cart.server'
 
 export const action: ActionFunction = async ({ request }) => {
   const rawFormData = await request.formData()
@@ -40,12 +41,14 @@ export const action: ActionFunction = async ({ request }) => {
     )
   }
 
-  const user = signup({
+  const user = await signup({
     email: formData.email,
     password: formData.password,
   })
 
-  return redirect('/')
+  await createUserCart({ userId: user.id })
+
+  return createUserSession(user.id, '/')
 }
 
 const Signup = () => {

@@ -19,6 +19,7 @@ const Header = ({ rootData }: { rootData: any }) => {
           <>
             <Form method="post" action="/api/logout" reloadDocument>
               <button
+                title="logout"
                 className="btn btn-ghost btn-square hover:bg-zinc-100"
                 type="submit"
               >
