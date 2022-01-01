@@ -1,4 +1,4 @@
-import { Form, json, Link, redirect, useActionData } from 'remix'
+import { Form, json, Link, redirect, useActionData, useTransition } from 'remix'
 import type { ActionFunction } from 'remix'
 import { db } from '~/utils/server/db.server'
 import { createUserSession, signup } from '~/utils/server/session.server'
@@ -53,6 +53,11 @@ export const action: ActionFunction = async ({ request }) => {
 
 const Signup = () => {
   const actionData = useActionData<SignupActionData>()
+  const transition = useTransition()
+
+  const loading =
+    (transition.state === 'submitting' || transition.state === 'loading') &&
+    transition.submission?.formData.get('submitType') === 'signup'
 
   return (
     <div className="min-h-[90vh]">
@@ -90,8 +95,14 @@ const Signup = () => {
               </div>
             ) : null}
           </div>
-          <button type="submit" className="block w-full mt-5 btn btn-primary">
-            SignUp
+          <button
+            name="submitType"
+            value="signup"
+            type="submit"
+            disabled={loading}
+            className="block w-full mt-5 btn btn-primary"
+          >
+            {loading ? 'Signing up...' : 'Signup'}
           </button>
         </Form>
         <div className="mt-4">

@@ -1,10 +1,11 @@
-import { Link, Form, json, useActionData } from 'remix'
+import { Link, Form, json, useActionData, useTransition } from 'remix'
 import type { ActionFunction } from 'remix'
 import { createUserSession, login } from '~/utils/server/session.server'
 import { validateEmailPassword } from '~/utils/validations'
 import { LoginActionData } from '~/types'
 
 export const action: ActionFunction = async ({ request }) => {
+  await new Promise((resolve) => setTimeout(resolve, 2000))
   const rawFormData = await request.formData()
   let formData: any = {}
 
@@ -43,6 +44,12 @@ export const action: ActionFunction = async ({ request }) => {
 
 const Login = () => {
   const actionData = useActionData<LoginActionData>()
+  const transition = useTransition()
+
+  const loading =
+    (transition.state === 'submitting' || transition.state === 'loading') &&
+    transition.submission?.formData.get('submitType') === 'login'
+
   return (
     <div className="min-h-[90vh]">
       <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
@@ -79,8 +86,14 @@ const Login = () => {
               </div>
             ) : null}
           </div>
-          <button type="submit" className="block w-full mt-5 btn btn-primary">
-            Login
+          <button
+            type="submit"
+            name="submitType"
+            value="login"
+            disabled={loading}
+            className="block w-full mt-5 btn btn-primary"
+          >
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </Form>
         <div className="mt-4">
