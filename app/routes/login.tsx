@@ -5,7 +5,6 @@ import { validateEmailPassword } from '~/utils/validations'
 import { LoginActionData } from '~/types'
 
 export const action: ActionFunction = async ({ request }) => {
-  await new Promise((resolve) => setTimeout(resolve, 2000))
   const rawFormData = await request.formData()
   let formData: any = {}
 

@@ -1,15 +1,21 @@
 import {
   ActionFunction,
+  Form,
   json,
   LoaderFunction,
   Outlet,
+  useActionData,
   useLoaderData,
+  useMatches,
+  useSubmit,
+  useTransition,
 } from 'remix'
 import { ActionMethods } from '~/types'
 import { createActionObject } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { getUserIdFromSession, logout } from '~/utils/server/session.server'
 import type { CartItem, Product } from '@prisma/client'
+import CartItemComponent from '~/components/CartItem'
 
 interface LoaderData {
   cartItems: (CartItem & {
@@ -31,6 +37,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     include: {
       product: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
 
   return json({
@@ -40,13 +49,29 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = (args) => {
   const method = args.request.method as keyof ActionMethods
-
   const actionObject = createActionObject()
 
-  actionObject.POST = () => {
-    return json({
-      hi: 'there',
-    })
+  actionObject.POST = async ({ request }) => {
+    const rawFormData = await request.formData()
+    const formData: any = {}
+    for (let [key, value] of rawFormData.entries()) {
+      formData[key] = value
+    }
+
+    const toRemoveCartItemId = formData.removeCartItem
+
+    if (toRemoveCartItemId) {
+      await db.cartItem.delete({
+        where: {
+          id: toRemoveCartItemId,
+        },
+      })
+      return json({
+        removed: true,
+      })
+    }
+
+    return null
   }
 
   if (actionObject.hasOwnProperty(method)) {
@@ -57,7 +82,25 @@ export const action: ActionFunction = (args) => {
 }
 
 const CartPage = () => {
+  const submit = useSubmit()
+  const transition = useTransition()
   const data = useLoaderData<LoaderData>()
+  const actionData = useActionData()
+  console.log(actionData)
+
+  const handleCartItemDelete = () => {
+    submit(null, {
+      method: 'post',
+    })
+  }
+
+  const optimisticDeleteCartItemCondition = (cartItemId: string) => {
+    return (
+      (transition.state === 'submitting' || transition.state === 'loading') &&
+      transition.submission &&
+      transition.submission.formData.get('removeCartItem') === cartItemId
+    )
+  }
 
   return (
     <div className="min-h-[90vh]">
@@ -66,54 +109,14 @@ const CartPage = () => {
       </h1>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-8 ">
-          {data.cartItems.map((cartItem) => (
-            <div key={cartItem.id} className="pt-6 ">
-              <div className="grid grid-cols-12">
-                <div className="col-span-2">
-                  {/* // TODO: image url should not be null change the schema*/}
-                  <div className="overflow-hidden rounded-md">
-                    <img src={cartItem.product.imageUrl as string} alt="" />
-                  </div>
-                </div>
-                <div className="flex flex-col col-span-10 px-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-lg font-medium text-slate-700">
-                        {cartItem.product.name}
-                      </p>
-                      <p className="text-slate-500">
-                        {cartItem.product.color}
-                        <span className="mx-2">|</span>
-                        {cartItem.size}
-                      </p>
-                    </div>
-                    <p className="text-lg font-medium text-slate-700">
-                      ${cartItem.product.price}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between mt-auto">
-                    <div>
-                      <select className="select select-bordered select-sm">
-                        {Array.from({ length: 6 }).map((_, i) =>
-                          i !== 0 ? (
-                            <option value={i} key={i} selected={i === 1}>
-                              {i}
-                            </option>
-                          ) : null
-                        )}
-                      </select>
-                    </div>
-                    <div>
-                      <button className="btn btn-sm btn-outline btn-error">
-                        remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <span className="block h-[1px] bg-slate-200 mt-6"></span>
-            </div>
-          ))}
+          {data.cartItems.map((cartItem) =>
+            optimisticDeleteCartItemCondition(cartItem.id) ? null : (
+              <CartItemComponent
+                cartItem={cartItem}
+                handleCartItemDelete={handleCartItemDelete}
+              />
+            )
+          )}
         </div>
         <div className="col-span-4 ">
           <Outlet />
