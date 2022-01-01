@@ -6,8 +6,9 @@
   "scripts": {
     "build:remix": "remix build",
     "build:css": "tailwindcss  -o ./app/styles/tailwind-prod.css --minify",
-    "build": "npx prisma migrate deploy && npm run build:css && npm run build:remix",
+    "build": "npm-run-all migrate:deploy build:css build:remix",
     "postinstall": "remix setup node",
+    "migrate:deploy": "prisma migrate deploy",
     "dev:remix": "remix dev",
     "dev:css": "tailwindcss -i ./app/styles/tailwind.css -o ./app/styles/tailwind-prod.css -w",
     "dev": "npm-run-all --parallel dev:*",
