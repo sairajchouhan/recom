@@ -48,18 +48,20 @@ const Header = ({ rootData }: { rootData: any }) => {
           </>
         )}
 
-        <button
-          title="Cart"
-          className="relative btn btn-square btn-ghost hover:bg-zinc-100"
-        >
-          {rootData?.isAuthenticated && rootData?.cartItemsCount > 0 ? (
-            <div className="absolute w-4 h-4 rounded-full bg-primary text-primary-content top-1 right-1">
-              <span className="text-xs">{rootData?.cartItemsCount}</span>
-            </div>
-          ) : null}
+        <Link to="/cart">
+          <button
+            title="Cart"
+            className="relative btn btn-square btn-ghost hover:bg-zinc-100"
+          >
+            {rootData?.isAuthenticated && rootData?.cartItemsCount > 0 ? (
+              <div className="absolute w-4 h-4 rounded-full bg-primary text-primary-content top-1 right-1">
+                <span className="text-xs">{rootData?.cartItemsCount}</span>
+              </div>
+            ) : null}
 
-          <ShoppingCartIcon className="w-6" />
-        </button>
+            <ShoppingCartIcon className="w-6" />
+          </button>
+        </Link>
       </div>
     </header>
   )
