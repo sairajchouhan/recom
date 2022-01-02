@@ -9,17 +9,17 @@ import {
   ScrollRestoration,
   useCatch,
   useLoaderData,
+  useTransition,
 } from 'remix'
-
+import * as React from 'react'
 import type { LinksFunction } from 'remix'
+import NProgress from 'nprogress'
+import nProgressStyles from 'nprogress/nprogress.css'
+
 import styles from './styles/tailwind-prod.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import {
-  getAuthUser,
-  isUserAuthenticated,
-  logout,
-} from './utils/server/session.server'
+import { getAuthUser, isUserAuthenticated } from './utils/server/session.server'
 import { db } from './utils/server/db.server'
 import invariant from 'tiny-invariant'
 import { createUserCart } from './utils/server/cart.server'
@@ -29,6 +29,10 @@ export const links: LinksFunction = () => {
     {
       rel: 'stylesheet',
       href: styles,
+    },
+    {
+      rel: 'stylesheet',
+      href: nProgressStyles,
     },
   ]
 }
@@ -90,8 +94,23 @@ function Document({
   )
 }
 
+NProgress.configure({
+  showSpinner: false,
+})
+
 export default function App() {
   const rootLoaderData = useLoaderData()
+  let transition = useTransition()
+  console.log(transition.state, transition.location, transition.type)
+
+  React.useEffect(() => {
+    if (transition.type === 'normalLoad') {
+      NProgress.start()
+    } else {
+      NProgress.done()
+    }
+  }, [transition.type])
+
   return (
     <Document>
       <Layout rootData={rootLoaderData}>

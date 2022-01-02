@@ -132,6 +132,7 @@ const CartPage = () => {
           {data.cartItems.map((cartItem) =>
             optimisticDeleteCartItemCondition(cartItem.id) ? null : (
               <CartItemComponent
+                key={cartItem.id}
                 cartItem={cartItem}
                 handleCartItemDelete={handleCartItemDelete}
               />
