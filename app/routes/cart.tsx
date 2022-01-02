@@ -61,11 +61,33 @@ export const action: ActionFunction = (args) => {
     const toRemoveCartItemId = formData.removeCartItem
 
     if (toRemoveCartItemId) {
-      await db.cartItem.delete({
+      const removedCartItem = await db.cartItem.delete({
         where: {
           id: toRemoveCartItemId,
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
+
+      await db.userCart.update({
+        where: {
+          id: removedCartItem.userCartId,
+        },
+        data: {
+          totalPrice: {
+            decrement: removedCartItem.product.price,
+          },
+          totalItems: {
+            decrement: removedCartItem.quantity,
+          },
+        },
+      })
+
       return json({
         removed: true,
       })
@@ -85,8 +107,6 @@ const CartPage = () => {
   const submit = useSubmit()
   const transition = useTransition()
   const data = useLoaderData<LoaderData>()
-  const actionData = useActionData()
-  console.log(actionData)
 
   const handleCartItemDelete = () => {
     submit(null, {
@@ -107,7 +127,7 @@ const CartPage = () => {
       <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
         Shopping Cart
       </h1>
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-x-16">
         <div className="col-span-8 ">
           {data.cartItems.map((cartItem) =>
             optimisticDeleteCartItemCondition(cartItem.id) ? null : (

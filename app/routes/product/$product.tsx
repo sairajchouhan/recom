@@ -15,6 +15,9 @@ import { cls, createActionObject } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
 import { getAuthUser, requireUserSession } from '~/utils/server/session.server'
+import { createUserCart } from '~/utils/server/cart.server'
+import { CartItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -62,16 +65,13 @@ export const action: ActionFunction = async (args) => {
       },
       select: {
         id: true,
+        totalItems: true,
+        totalPrice: true,
       },
     })
 
     if (!userCart) {
-      userCart = await db.userCart.create({
-        data: {
-          userId: user.id,
-          totalPrice: 0,
-        },
-      })
+      userCart = await createUserCart({ userId: user.id })
     }
 
     const cartItemSearch = await db.cartItem.findMany({
@@ -84,8 +84,16 @@ export const action: ActionFunction = async (args) => {
       },
     })
 
+    let cartItem:
+      | (CartItem & {
+          product: {
+            price: Decimal
+          }
+        })
+      | null = null
+
     if (cartItemSearch.length > 0) {
-      await db.cartItem.update({
+      cartItem = await db.cartItem.update({
         where: {
           id: cartItemSearch[0].id,
         },
@@ -94,17 +102,45 @@ export const action: ActionFunction = async (args) => {
             increment: 1,
           },
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
     } else {
-      const cartItem = await db.cartItem.create({
+      cartItem = await db.cartItem.create({
         data: {
           productId: params.product as string,
           userCartId: userCart.id,
           size: formData.size,
           quantity: 1,
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
     }
+
+    await db.userCart.update({
+      where: {
+        id: userCart.id,
+      },
+      data: {
+        totalPrice: {
+          increment: cartItem.product.price,
+        },
+        totalItems: {
+          increment: cartItem.quantity,
+        },
+      },
+    })
 
     return json(
       {
