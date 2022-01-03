@@ -3,10 +3,8 @@ import { Form } from 'remix'
 
 const CartItem = ({
   cartItem,
-  handleCartItemDelete,
 }: {
   cartItem: CartItem & { product: Product }
-  handleCartItemDelete: () => void
 }) => {
   return (
     <div key={cartItem.id} className="pt-6 ">
@@ -51,13 +49,13 @@ const CartItem = ({
                 )}
               </select>
             </Form>
-            <Form method="post">
+            <Form id="removeCartItemForm" method="post">
               <button
                 type="submit"
                 className="btn btn-sm btn-outline btn-error"
                 name="removeCartItem"
                 value={cartItem.id}
-                onClick={() => handleCartItemDelete()}
+                form="removeCartItemForm"
               >
                 remove
               </button>

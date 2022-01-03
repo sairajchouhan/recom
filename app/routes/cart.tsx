@@ -4,6 +4,7 @@ import {
   json,
   LoaderFunction,
   Outlet,
+  redirect,
   useActionData,
   useLoaderData,
   useMatches,
@@ -88,9 +89,7 @@ export const action: ActionFunction = (args) => {
         },
       })
 
-      return json({
-        removed: true,
-      })
+      return redirect('/cart')
     }
 
     return null
@@ -107,13 +106,6 @@ const CartPage = () => {
   const submit = useSubmit()
   const transition = useTransition()
   const data = useLoaderData<LoaderData>()
-
-  const handleCartItemDelete = () => {
-    submit(null, {
-      method: 'post',
-    })
-  }
-
   const optimisticDeleteCartItemCondition = (cartItemId: string) => {
     return (
       (transition.state === 'submitting' || transition.state === 'loading') &&
@@ -131,11 +123,7 @@ const CartPage = () => {
         <div className="col-span-8 ">
           {data.cartItems.map((cartItem) =>
             optimisticDeleteCartItemCondition(cartItem.id) ? null : (
-              <CartItemComponent
-                key={cartItem.id}
-                cartItem={cartItem}
-                handleCartItemDelete={handleCartItemDelete}
-              />
+              <CartItemComponent key={cartItem.id} cartItem={cartItem} />
             )
           )}
         </div>

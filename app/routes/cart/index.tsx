@@ -33,20 +33,27 @@ export const loader: LoaderFunction = async ({ request }) => {
     .add(deliveryCharge)
     .toFixed(2)
 
-  return {
-    totalItems: userCart.totalItems,
-    deliveryCharge,
-    totalPriceForProducts,
-    tax,
-    total,
-  }
+  const returnData =
+    userCart.totalItems > 0
+      ? {
+          totalItems: userCart.totalItems,
+          deliveryCharge,
+          totalPriceForProducts,
+          tax,
+          total,
+        }
+      : null
+
+  return returnData
 }
 
 const CartIndex = () => {
   const data = useLoaderData()
-  console.log(data)
+
+  if (!data) return null
+
   return (
-    <div className="p-6 rounded-md shadow-sm bg-blue-50/40">
+    <div className="p-6 rounded-md shadow-sm bg-blue-50/60">
       <h3 className="mb-4 text-lg font-medium text-slate-700">Order Summary</h3>
 
       <div className="grid grid-cols-1 divide-y">
