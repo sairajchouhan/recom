@@ -2,6 +2,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LoaderFunction,
   Outlet,
   redirect,
@@ -103,7 +104,6 @@ export const action: ActionFunction = (args) => {
 }
 
 const CartPage = () => {
-  const submit = useSubmit()
   const transition = useTransition()
   const data = useLoaderData<LoaderData>()
   const optimisticDeleteCartItemCondition = (cartItemId: string) => {
@@ -116,21 +116,40 @@ const CartPage = () => {
 
   return (
     <div className="min-h-[90vh]">
-      <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
-        Shopping Cart
-      </h1>
-      <div className="grid grid-cols-12 gap-x-16">
-        <div className="col-span-8 ">
-          {data.cartItems.map((cartItem) =>
-            optimisticDeleteCartItemCondition(cartItem.id) ? null : (
-              <CartItemComponent key={cartItem.id} cartItem={cartItem} />
-            )
-          )}
+      {data.cartItems.length > 0 ? (
+        <>
+          <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
+            Shopping Cart
+          </h1>
+          <div className="grid grid-cols-12 gap-x-16">
+            <div className="col-span-8 ">
+              {data.cartItems.map((cartItem) =>
+                optimisticDeleteCartItemCondition(cartItem.id) ? null : (
+                  <CartItemComponent key={cartItem.id} cartItem={cartItem} />
+                )
+              )}
+            </div>
+            <div className="col-span-4 ">
+              <Outlet
+                context={{
+                  isLastItem: data.cartItems.length === 1,
+                }}
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="mt-5 mb-3 text-6xl font-bold text-center text-slate-700">
+            Cart is Empty
+          </h1>
+          <Link to="/">
+            <button className="mt-4 btn btn-outline btn-primary">
+              Browse products
+            </button>
+          </Link>
         </div>
-        <div className="col-span-4 ">
-          <Outlet />
-        </div>
-      </div>
+      )}
     </div>
   )
 }
