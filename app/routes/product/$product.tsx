@@ -137,7 +137,7 @@ export const action: ActionFunction = async (args) => {
           increment: cartItem.product.price,
         },
         totalItems: {
-          increment: cartItem.quantity,
+          increment: 1,
         },
       },
     })
@@ -242,7 +242,7 @@ const ProductDetailPage = () => {
                             id={size}
                             value={size}
                             hidden
-                            defaultChecked={size === 'XS'}
+                            defaultChecked={size === 'M'}
                           />
                         </>
                       )}

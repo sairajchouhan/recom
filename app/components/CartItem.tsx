@@ -40,6 +40,9 @@ const CartItem = ({
                 name="quantity"
                 className="select select-bordered select-sm"
                 defaultValue={cartItem.quantity}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  console.log(e.target.value)
+                }}
               >
                 {Array.from({ length: 6 }).map((_, i) =>
                   i !== 0 ? (
@@ -50,7 +53,7 @@ const CartItem = ({
                 )}
               </select>
             </Form>
-            <Form id="removeCartItemForm" method="post">
+            <Form id="removeCartItemForm" method="post" action="/cart">
               <button
                 type="submit"
                 className="btn btn-sm btn-outline btn-error"
