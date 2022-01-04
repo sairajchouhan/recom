@@ -14,9 +14,9 @@ import {
 import * as React from 'react'
 import type { LinksFunction } from 'remix'
 import NProgress from 'nprogress'
-import nProgressStyles from 'nprogress/nprogress.css'
 
 import styles from './styles/tailwind-prod.css'
+import nProgressStyles from './styles/nprogress.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { getAuthUser, isUserAuthenticated } from './utils/server/session.server'
