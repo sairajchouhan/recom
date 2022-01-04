@@ -1,11 +1,13 @@
 import { CartItem, Product } from '@prisma/client'
-import { Form, Link } from 'remix'
+import { Form, Link, useSubmit } from 'remix'
 
 const CartItem = ({
   cartItem,
 }: {
   cartItem: CartItem & { product: Product }
 }) => {
+  const submit = useSubmit()
+
   return (
     <div key={cartItem.id} className="pt-6 ">
       <div className="grid grid-cols-12">
@@ -39,14 +41,21 @@ const CartItem = ({
             </p>
           </div>
           <div className="flex items-center justify-between mt-auto">
-            <Form method="post" className="flex items-center justify-between">
+            <Form
+              method="post"
+              action="/cart"
+              className="flex items-center justify-between"
+              onChange={(e: React.ChangeEvent<HTMLFormElement>) => {
+                submit(e.currentTarget, {
+                  action: '/cart',
+                  method: 'post',
+                })
+              }}
+            >
               <select
                 name="quantity"
                 className="select select-bordered select-sm"
                 defaultValue={cartItem.quantity}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  console.log(e.target.value)
-                }}
               >
                 {Array.from({ length: 6 }).map((_, i) =>
                   i !== 0 ? (
@@ -56,6 +65,12 @@ const CartItem = ({
                   ) : null
                 )}
               </select>
+              <input
+                type="text"
+                hidden
+                name="cartId"
+                defaultValue={cartItem.id}
+              />
             </Form>
             <Form method="post" action="/cart">
               <button

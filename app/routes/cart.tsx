@@ -57,6 +57,7 @@ export const action: ActionFunction = (args) => {
     }
 
     const toRemoveCartItemId = formData.removeCartItem
+    const quantity = Number(formData.quantity)
 
     if (toRemoveCartItemId) {
       const removedCartItem = await db.cartItem.delete({
@@ -85,6 +86,82 @@ export const action: ActionFunction = (args) => {
           totalItems: {
             decrement: removedCartItem.quantity,
           },
+        },
+      })
+
+      return redirect('/cart')
+    }
+
+    if (quantity) {
+      const cartId = formData.cartId
+
+      const previousCartItem = await db.cartItem.findUnique({
+        where: {
+          id: cartId,
+        },
+        select: {
+          quantity: true,
+        },
+      })
+
+      if (!previousCartItem) {
+        return redirect('/cart')
+      }
+
+      const updatedCartItem = await db.cartItem.update({
+        where: {
+          id: cartId,
+        },
+        data: {
+          quantity,
+        },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
+      })
+
+      const changeInQuantity =
+        updatedCartItem.quantity - previousCartItem.quantity
+
+      let totalPriceUpdate: any = {}
+      let totalQuantityUpdate: any = {}
+
+      if (changeInQuantity > 0) {
+        totalPriceUpdate = {
+          increment: new Prisma.Decimal(updatedCartItem.product.price).mul(
+            changeInQuantity
+          ),
+        }
+        totalQuantityUpdate = {
+          increment: changeInQuantity,
+        }
+      }
+      if (changeInQuantity < 0) {
+        totalPriceUpdate = {
+          decrement: new Prisma.Decimal(updatedCartItem.product.price)
+            .mul(changeInQuantity)
+            .mul(-1),
+        }
+        totalQuantityUpdate = {
+          decrement: -1 * changeInQuantity,
+        }
+      }
+
+      if (changeInQuantity === 0) {
+        return redirect('/cart')
+      }
+
+      await db.userCart.update({
+        where: {
+          id: updatedCartItem.userCartId,
+        },
+        data: {
+          totalPrice: totalPriceUpdate,
+          totalItems: totalQuantityUpdate,
         },
       })
 
