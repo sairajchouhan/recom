@@ -1,5 +1,5 @@
 import { CartItem, Product } from '@prisma/client'
-import { Form } from 'remix'
+import { Form, Link } from 'remix'
 
 const CartItem = ({
   cartItem,
@@ -12,18 +12,22 @@ const CartItem = ({
         <div className="col-span-2">
           {/* // TODO: image url should not be null change the schema*/}
           <div className="overflow-hidden rounded-md">
-            <img
-              src={cartItem.product.imageUrl as string}
-              alt={cartItem.product.name}
-            />
+            <Link to={`/product/${cartItem.product.id}`}>
+              <img
+                src={cartItem.product.imageUrl as string}
+                alt={cartItem.product.name}
+              />
+            </Link>
           </div>
         </div>
         <div className="flex flex-col col-span-10 px-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-lg font-medium text-slate-700">
-                {cartItem.product.name}
-              </p>
+              <Link to={`/product/${cartItem.product.id}`}>
+                <p className="text-lg font-medium text-slate-700">
+                  {cartItem.product.name}
+                </p>
+              </Link>
               <p className="text-slate-500">
                 {cartItem.product.color}
                 <span className="mx-2">|</span>
@@ -53,13 +57,12 @@ const CartItem = ({
                 )}
               </select>
             </Form>
-            <Form id="removeCartItemForm" method="post" action="/cart">
+            <Form method="post" action="/cart">
               <button
                 type="submit"
                 className="btn btn-sm btn-outline btn-error"
                 name="removeCartItem"
                 value={cartItem.id}
-                form="removeCartItemForm"
               >
                 remove
               </button>

@@ -18,7 +18,7 @@ import { db } from '~/utils/server/db.server'
 import { getUserIdFromSession, logout } from '~/utils/server/session.server'
 import type { CartItem, Product } from '@prisma/client'
 import CartItemComponent from '~/components/CartItem'
-
+import { Prisma } from '@prisma/client'
 interface LoaderData {
   cartItems: (CartItem & {
     product: Product
@@ -82,7 +82,9 @@ export const action: ActionFunction = (args) => {
         },
         data: {
           totalPrice: {
-            decrement: removedCartItem.product.price,
+            decrement: new Prisma.Decimal(removedCartItem.product.price).mul(
+              removedCartItem.quantity
+            ),
           },
           totalItems: {
             decrement: removedCartItem.quantity,
