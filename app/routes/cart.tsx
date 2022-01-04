@@ -1,13 +1,11 @@
 import {
   ActionFunction,
-  Form,
   json,
+  Link,
   LoaderFunction,
   Outlet,
-  useActionData,
+  redirect,
   useLoaderData,
-  useMatches,
-  useSubmit,
   useTransition,
 } from 'remix'
 import { ActionMethods } from '~/types'
@@ -16,7 +14,7 @@ import { db } from '~/utils/server/db.server'
 import { getUserIdFromSession, logout } from '~/utils/server/session.server'
 import type { CartItem, Product } from '@prisma/client'
 import CartItemComponent from '~/components/CartItem'
-
+import { Prisma } from '@prisma/client'
 interface LoaderData {
   cartItems: (CartItem & {
     product: Product
@@ -59,16 +57,115 @@ export const action: ActionFunction = (args) => {
     }
 
     const toRemoveCartItemId = formData.removeCartItem
+    const quantity = Number(formData.quantity)
 
     if (toRemoveCartItemId) {
-      await db.cartItem.delete({
+      const removedCartItem = await db.cartItem.delete({
         where: {
           id: toRemoveCartItemId,
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
-      return json({
-        removed: true,
+
+      await db.userCart.update({
+        where: {
+          id: removedCartItem.userCartId,
+        },
+        data: {
+          totalPrice: {
+            decrement: new Prisma.Decimal(removedCartItem.product.price).mul(
+              removedCartItem.quantity
+            ),
+          },
+          totalItems: {
+            decrement: removedCartItem.quantity,
+          },
+        },
       })
+
+      return redirect('/cart')
+    }
+
+    if (quantity) {
+      const cartId = formData.cartId
+
+      const previousCartItem = await db.cartItem.findUnique({
+        where: {
+          id: cartId,
+        },
+        select: {
+          quantity: true,
+        },
+      })
+
+      if (!previousCartItem) {
+        return redirect('/cart')
+      }
+
+      const updatedCartItem = await db.cartItem.update({
+        where: {
+          id: cartId,
+        },
+        data: {
+          quantity,
+        },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
+      })
+
+      const changeInQuantity =
+        updatedCartItem.quantity - previousCartItem.quantity
+
+      let totalPriceUpdate: any = {}
+      let totalQuantityUpdate: any = {}
+
+      if (changeInQuantity > 0) {
+        totalPriceUpdate = {
+          increment: new Prisma.Decimal(updatedCartItem.product.price).mul(
+            changeInQuantity
+          ),
+        }
+        totalQuantityUpdate = {
+          increment: changeInQuantity,
+        }
+      }
+      if (changeInQuantity < 0) {
+        totalPriceUpdate = {
+          decrement: new Prisma.Decimal(updatedCartItem.product.price)
+            .mul(changeInQuantity)
+            .mul(-1),
+        }
+        totalQuantityUpdate = {
+          decrement: -1 * changeInQuantity,
+        }
+      }
+
+      if (changeInQuantity === 0) {
+        return redirect('/cart')
+      }
+
+      await db.userCart.update({
+        where: {
+          id: updatedCartItem.userCartId,
+        },
+        data: {
+          totalPrice: totalPriceUpdate,
+          totalItems: totalQuantityUpdate,
+        },
+      })
+
+      return redirect('/cart')
     }
 
     return null
@@ -82,18 +179,8 @@ export const action: ActionFunction = (args) => {
 }
 
 const CartPage = () => {
-  const submit = useSubmit()
   const transition = useTransition()
   const data = useLoaderData<LoaderData>()
-  const actionData = useActionData()
-  console.log(actionData)
-
-  const handleCartItemDelete = () => {
-    submit(null, {
-      method: 'post',
-    })
-  }
-
   const optimisticDeleteCartItemCondition = (cartItemId: string) => {
     return (
       (transition.state === 'submitting' || transition.state === 'loading') &&
@@ -104,24 +191,40 @@ const CartPage = () => {
 
   return (
     <div className="min-h-[90vh]">
-      <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
-        Shopping Cart
-      </h1>
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-8 ">
-          {data.cartItems.map((cartItem) =>
-            optimisticDeleteCartItemCondition(cartItem.id) ? null : (
-              <CartItemComponent
-                cartItem={cartItem}
-                handleCartItemDelete={handleCartItemDelete}
+      {data.cartItems.length > 0 ? (
+        <>
+          <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
+            Shopping Cart
+          </h1>
+          <div className="grid grid-cols-12 gap-x-16">
+            <div className="col-span-8 ">
+              {data.cartItems.map((cartItem) =>
+                optimisticDeleteCartItemCondition(cartItem.id) ? null : (
+                  <CartItemComponent key={cartItem.id} cartItem={cartItem} />
+                )
+              )}
+            </div>
+            <div className="col-span-4 ">
+              <Outlet
+                context={{
+                  isLastItem: data.cartItems.length === 1,
+                }}
               />
-            )
-          )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="mt-5 mb-3 text-6xl font-bold text-center text-slate-700">
+            Cart is Empty
+          </h1>
+          <Link to="/">
+            <button className="mt-4 btn btn-outline btn-primary">
+              Browse products
+            </button>
+          </Link>
         </div>
-        <div className="col-span-4 ">
-          <Outlet />
-        </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -35,7 +35,7 @@ model Product {
   id          String     @id @default(uuid())
   name        String
   description String
-  price       Int
+  price       Decimal
   color       String?
   imageUrl    String?
   createdAt   DateTime   @default(now())
@@ -68,7 +68,8 @@ model CartItem {
 model UserCart {
   id         String     @id @default(uuid())
   userId     String
-  totalPrice Decimal
+  totalPrice Decimal    @default(0)
+  totalItems Int        @default(0)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   cartItem   CartItem[]

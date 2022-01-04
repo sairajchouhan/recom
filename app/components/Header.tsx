@@ -7,14 +7,16 @@ import { Form, Link } from 'remix'
 
 const Header = ({ rootData }: { rootData: any }) => {
   return (
-    <header className="mb-2 border-b navbar">
-      <div className="px-2 mx-2 navbar-start">
+    <header className="px-0 mb-2 border-b navbar">
+      <div className=" navbar-start">
         <Link to="/">
-          <span className="text-2xl font-bold">Recom</span>
+          <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-violet-500">
+            Recom
+          </span>
         </Link>
       </div>
 
-      <div className="navbar-end text-neutral">
+      <div className="px-0 navbar-end text-neutral">
         {rootData?.isAuthenticated ? (
           <>
             <Form method="post" action="/api/logout" reloadDocument>

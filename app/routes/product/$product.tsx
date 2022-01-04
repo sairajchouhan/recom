@@ -6,7 +6,7 @@ import {
   useCatch,
   Form,
   json,
-  useSubmit,
+  useSearchParams,
 } from 'remix'
 import { RadioGroup } from '@headlessui/react'
 import invariant from 'tiny-invariant'
@@ -15,6 +15,9 @@ import { cls, createActionObject } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
 import { getAuthUser, requireUserSession } from '~/utils/server/session.server'
+import { createUserCart } from '~/utils/server/cart.server'
+import { CartItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -62,16 +65,13 @@ export const action: ActionFunction = async (args) => {
       },
       select: {
         id: true,
+        totalItems: true,
+        totalPrice: true,
       },
     })
 
     if (!userCart) {
-      userCart = await db.userCart.create({
-        data: {
-          userId: user.id,
-          totalPrice: 0,
-        },
-      })
+      userCart = await createUserCart({ userId: user.id })
     }
 
     const cartItemSearch = await db.cartItem.findMany({
@@ -84,8 +84,16 @@ export const action: ActionFunction = async (args) => {
       },
     })
 
+    let cartItem:
+      | (CartItem & {
+          product: {
+            price: Decimal
+          }
+        })
+      | null = null
+
     if (cartItemSearch.length > 0) {
-      await db.cartItem.update({
+      cartItem = await db.cartItem.update({
         where: {
           id: cartItemSearch[0].id,
         },
@@ -94,17 +102,45 @@ export const action: ActionFunction = async (args) => {
             increment: 1,
           },
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
     } else {
-      const cartItem = await db.cartItem.create({
+      cartItem = await db.cartItem.create({
         data: {
           productId: params.product as string,
           userCartId: userCart.id,
           size: formData.size,
           quantity: 1,
         },
+        include: {
+          product: {
+            select: {
+              price: true,
+            },
+          },
+        },
       })
     }
+
+    await db.userCart.update({
+      where: {
+        id: userCart.id,
+      },
+      data: {
+        totalPrice: {
+          increment: cartItem.product.price,
+        },
+        totalItems: {
+          increment: 1,
+        },
+      },
+    })
 
     return json(
       {
@@ -123,18 +159,15 @@ export const action: ActionFunction = async (args) => {
   return null
 }
 
-const size = ['XS', 'S', 'M', 'L', 'XL']
+const allSizes = ['XS', 'S', 'M', 'L', 'XL']
 
 const ProductDetailPage = () => {
+  const [url] = useSearchParams()
   const data = useLoaderData()
-  const submit = useSubmit()
-  const [selectedSize, setSelectedSize] = useState(size[0])
 
-  const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
-    submit(e.currentTarget, {
-      method: 'post',
-    })
-  }
+  const [selectedSize, setSelectedSize] = useState(
+    allSizes[allSizes.indexOf(url.get('size') ?? 'M')]
+  )
 
   return (
     <div className="min-h-[100vh]">
@@ -161,20 +194,21 @@ const ProductDetailPage = () => {
             </p>
           </div>
           {/* 2 */}
-          <Form method="post" onSubmit={handleAddToCart}>
+          <Form method="post">
             <div className="flex flex-col ">
               <h3 className="mb-1 font-medium text-zinc-700">Size</h3>
               <RadioGroup
                 as="fieldset"
                 value={selectedSize}
-                onChange={setSelectedSize}
-                className=""
+                onChange={(val) => {
+                  setSelectedSize(val)
+                }}
               >
                 <RadioGroup.Label className="sr-only">
                   Choose a size
                 </RadioGroup.Label>
                 <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
-                  {size.map((size: any) => (
+                  {allSizes.map((size: any) => (
                     <RadioGroup.Option
                       key={size}
                       value={size}
@@ -206,7 +240,7 @@ const ProductDetailPage = () => {
                             id={size}
                             value={size}
                             hidden
-                            defaultChecked={size === 'XS'}
+                            defaultChecked={size === 'M'}
                           />
                         </>
                       )}
