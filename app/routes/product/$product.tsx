@@ -166,12 +166,6 @@ const ProductDetailPage = () => {
   const submit = useSubmit()
   const [selectedSize, setSelectedSize] = useState(size[2])
 
-  const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
-    submit(e.currentTarget, {
-      method: 'post',
-    })
-  }
-
   return (
     <div className="min-h-[100vh]">
       <div className="grid grid-cols-12 mt-8 ">
@@ -197,7 +191,7 @@ const ProductDetailPage = () => {
             </p>
           </div>
           {/* 2 */}
-          <Form method="post" onSubmit={handleAddToCart}>
+          <Form method="post">
             <div className="flex flex-col ">
               <h3 className="mb-1 font-medium text-zinc-700">Size</h3>
               <RadioGroup
