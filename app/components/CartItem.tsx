@@ -39,10 +39,11 @@ const CartItem = ({
               <select
                 name="quantity"
                 className="select select-bordered select-sm"
+                defaultValue={cartItem.quantity}
               >
                 {Array.from({ length: 6 }).map((_, i) =>
                   i !== 0 ? (
-                    <option value={i} key={i} defaultValue={1}>
+                    <option value={i} key={i}>
                       {i}
                     </option>
                   ) : null

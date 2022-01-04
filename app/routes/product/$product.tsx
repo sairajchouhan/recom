@@ -164,7 +164,7 @@ const size = ['XS', 'S', 'M', 'L', 'XL']
 const ProductDetailPage = () => {
   const data = useLoaderData()
   const submit = useSubmit()
-  const [selectedSize, setSelectedSize] = useState(size[0])
+  const [selectedSize, setSelectedSize] = useState(size[2])
 
   const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
     submit(e.currentTarget, {
