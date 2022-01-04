@@ -101,7 +101,7 @@ NProgress.configure({
 export default function App() {
   const rootLoaderData = useLoaderData()
   let transition = useTransition()
-  console.log(transition.state, transition.location, transition.type)
+  // console.log(transition)
 
   React.useEffect(() => {
     if (transition.type === 'normalLoad') {

@@ -6,7 +6,7 @@ import {
   useCatch,
   Form,
   json,
-  useSubmit,
+  useSearchParams,
 } from 'remix'
 import { RadioGroup } from '@headlessui/react'
 import invariant from 'tiny-invariant'
@@ -159,12 +159,15 @@ export const action: ActionFunction = async (args) => {
   return null
 }
 
-const size = ['XS', 'S', 'M', 'L', 'XL']
+const allSizes = ['XS', 'S', 'M', 'L', 'XL']
 
 const ProductDetailPage = () => {
+  const [url] = useSearchParams()
   const data = useLoaderData()
-  const submit = useSubmit()
-  const [selectedSize, setSelectedSize] = useState(size[2])
+
+  const [selectedSize, setSelectedSize] = useState(
+    allSizes[allSizes.indexOf(url.get('size') ?? 'M')]
+  )
 
   return (
     <div className="min-h-[100vh]">
@@ -197,14 +200,15 @@ const ProductDetailPage = () => {
               <RadioGroup
                 as="fieldset"
                 value={selectedSize}
-                onChange={setSelectedSize}
-                className=""
+                onChange={(val) => {
+                  setSelectedSize(val)
+                }}
               >
                 <RadioGroup.Label className="sr-only">
                   Choose a size
                 </RadioGroup.Label>
                 <div className="grid grid-cols-5 gap-x-2 sm:gap-x-4 xl:grid-cols-7">
-                  {size.map((size: any) => (
+                  {allSizes.map((size: any) => (
                     <RadioGroup.Option
                       key={size}
                       value={size}

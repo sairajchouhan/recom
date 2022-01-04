@@ -14,7 +14,7 @@ const CartItem = ({
         <div className="col-span-2">
           {/* // TODO: image url should not be null change the schema*/}
           <div className="overflow-hidden rounded-md">
-            <Link to={`/product/${cartItem.product.id}`}>
+            <Link to={`/product/${cartItem.product.id}?size=${cartItem.size}`}>
               <img
                 src={cartItem.product.imageUrl as string}
                 alt={cartItem.product.name}
@@ -25,7 +25,9 @@ const CartItem = ({
         <div className="flex flex-col col-span-10 px-6">
           <div className="flex items-start justify-between">
             <div>
-              <Link to={`/product/${cartItem.product.id}`}>
+              <Link
+                to={`/product/${cartItem.product.id}?size=${cartItem.size}`}
+              >
                 <p className="text-lg font-medium text-slate-700">
                   {cartItem.product.name}
                 </p>
