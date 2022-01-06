@@ -9,7 +9,12 @@ export interface LoginActionData {
   errors?: Partial<LoginFormFields>
 }
 
-export interface SignupActionData extends LoginActionData {}
+export interface SignupActionData extends LoginActionData {
+  fields?: {
+    email: string
+    password: string
+  }
+}
 
 export interface ActionMethods {
   POST: 'POST'

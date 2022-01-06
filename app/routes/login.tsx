@@ -51,7 +51,8 @@ const Login = () => {
 
   return (
     <div className="min-h-[90vh]">
-      <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
+      <h1 className="my-6 text-6xl text-center text-primary">Login</h1>
+      <div className="w-11/12 mx-auto sm:w-3/4 md:w-1/2 lg:w-1/3">
         <Form method="post">
           <div className="form-control">
             <label className="label">

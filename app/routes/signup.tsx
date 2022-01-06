@@ -14,6 +14,19 @@ export const action: ActionFunction = async ({ request }) => {
     formData[item[0]] = item[1]
   }
 
+  if (formData.generateCredentials) {
+    const resp = await fetch(
+      'https://random-data-api.com/api/users/random_user'
+    )
+    const data = await resp.json()
+    return json({
+      fields: {
+        email: data.email,
+        password: data.password,
+      },
+    })
+  }
+
   const errors = validateEmailPassword(formData)
   if (Object.keys(errors).length > 0) {
     return json<SignupActionData>(
@@ -61,7 +74,8 @@ const Signup = () => {
 
   return (
     <div className="min-h-[90vh]">
-      <div className="w-11/12 mx-auto mt-16 sm:w-3/4 md:w-1/2 lg:w-1/3">
+      <h1 className="my-6 text-6xl text-center text-primary">Sign Up</h1>
+      <div className="w-11/12 mx-auto sm:w-3/4 md:w-1/2 lg:w-1/3">
         <Form method="post">
           <div className="form-control">
             <label className="label">
@@ -72,6 +86,7 @@ const Signup = () => {
               name="email"
               placeholder="jhon@gmail.com"
               className="input input-primary input-bordered"
+              defaultValue={actionData?.fields && actionData?.fields?.email}
             />
             {actionData?.errors?.email ? (
               <div className="text-sm italic text-red-500">
@@ -87,6 +102,7 @@ const Signup = () => {
               type="password"
               name="password"
               placeholder="your password"
+              defaultValue={actionData?.fields && actionData?.fields?.password}
               className="input input-primary input-bordered"
             />
             {actionData?.errors?.password ? (
@@ -112,6 +128,24 @@ const Signup = () => {
               Login
             </Link>
           </p>
+        </div>
+        <div className="py-4 mt-6 text-center bg-gray-100 rounded-md">
+          <p className="">
+            Creating a new account is borring let so let me help you 👇{' '}
+          </p>
+          <Form method="post">
+            <button
+              name="generateCredentials"
+              value="true"
+              type="submit"
+              className="text-primary hover:underline "
+            >
+              {transition.submission?.formData.get('generateCredentials') ===
+              'true'
+                ? 'Generating credentials...'
+                : 'Click here to generate random credentials'}
+            </button>
+          </Form>
         </div>
       </div>
     </div>
