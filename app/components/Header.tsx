@@ -50,7 +50,7 @@ const Header = ({ rootData }: { rootData: any }) => {
           </>
         )}
 
-        <Link to="/cart">
+        <Link to="/checkout/cart">
           <button
             title="Cart"
             className="relative btn btn-square btn-ghost hover:bg-zinc-100"

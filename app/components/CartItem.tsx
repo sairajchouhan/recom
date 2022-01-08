@@ -45,11 +45,11 @@ const CartItem = ({
           <div className="flex items-center justify-between mt-6 sm:mt-auto ">
             <Form
               method="post"
-              action="/cart"
+              action="/checkout/cart"
               className="flex items-center justify-between"
               onChange={(e: React.ChangeEvent<HTMLFormElement>) => {
                 submit(e.currentTarget, {
-                  action: '/cart',
+                  action: '/checkout/cart',
                   method: 'post',
                 })
               }}
@@ -74,7 +74,7 @@ const CartItem = ({
                 defaultValue={cartItem.id}
               />
             </Form>
-            <Form method="post" action="/cart">
+            <Form method="post" action="/checkout/cart">
               <button
                 type="submit"
                 className="btn btn-sm btn-outline btn-error"

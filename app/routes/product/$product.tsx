@@ -260,7 +260,7 @@ const ProductDetailPage = () => {
             {/* 3 */}
             <div className="grid grid-cols-2 gap-4 mt-6">
               {actionData?.addedToCart && actionData?.size === selectedSize ? (
-                <Link to="/cart" className="col-span-2 md:col-span-1 ">
+                <Link to="/checkout/cart" className="col-span-2 md:col-span-1 ">
                   <button className="w-full btn btn-primary">Go to cart</button>
                 </Link>
               ) : (

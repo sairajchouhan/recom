@@ -89,7 +89,7 @@ export const action: ActionFunction = (args) => {
         },
       })
 
-      return redirect('/cart')
+      return redirect('/checkout/cart')
     }
 
     if (quantity) {
@@ -105,7 +105,7 @@ export const action: ActionFunction = (args) => {
       })
 
       if (!previousCartItem) {
-        return redirect('/cart')
+        return redirect('/checkout/cart')
       }
 
       const updatedCartItem = await db.cartItem.update({
@@ -152,7 +152,7 @@ export const action: ActionFunction = (args) => {
       }
 
       if (changeInQuantity === 0) {
-        return redirect('/cart')
+        return redirect('/checkout/cart')
       }
 
       await db.userCart.update({
@@ -165,7 +165,7 @@ export const action: ActionFunction = (args) => {
         },
       })
 
-      return redirect('/cart')
+      return redirect('/checkout/cart')
     }
 
     return null
