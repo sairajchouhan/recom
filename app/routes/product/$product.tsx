@@ -7,17 +7,21 @@ import {
   Form,
   json,
   useSearchParams,
+  useTransition,
+  useNavigate,
+  useActionData,
+  Link,
 } from 'remix'
 import { RadioGroup } from '@headlessui/react'
 import invariant from 'tiny-invariant'
+import { CartItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime'
 
-import { cls, createActionObject } from '~/utils/helpers'
+import { cls, createActionObject, waitFor } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
 import { getAuthUser, requireUserSession } from '~/utils/server/session.server'
 import { createUserCart } from '~/utils/server/cart.server'
-import { CartItem } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -45,6 +49,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export const action: ActionFunction = async (args) => {
+  await waitFor(1.5)
   await requireUserSession(args.request)
   const method = args.request.method as keyof ActionMethods
   const actionObject = createActionObject()
@@ -145,6 +150,7 @@ export const action: ActionFunction = async (args) => {
     return json(
       {
         addedToCart: true,
+        size: cartItem.size,
       },
       {
         status: 201,
@@ -162,8 +168,11 @@ export const action: ActionFunction = async (args) => {
 const allSizes = ['XS', 'S', 'M', 'L', 'XL']
 
 const ProductDetailPage = () => {
-  const [url] = useSearchParams()
+  const transition = useTransition()
   const data = useLoaderData()
+  const actionData = useActionData()
+  const [url] = useSearchParams()
+  console.log(transition.state)
 
   const [selectedSize, setSelectedSize] = useState(
     allSizes[allSizes.indexOf(url.get('size') ?? 'M')]
@@ -251,14 +260,26 @@ const ProductDetailPage = () => {
             </div>
             {/* 3 */}
             <div className="grid grid-cols-2 gap-4 mt-6">
-              <button
-                name="addToCart"
-                value={'addToCart'}
-                className="col-span-2 md:col-span-1 btn btn-primary"
-                type="submit"
-              >
-                Add to Cart
-              </button>
+              {actionData?.addedToCart && actionData?.size === selectedSize ? (
+                <Link to="/cart" className="col-span-2 md:col-span-1 ">
+                  <button className="w-full btn btn-primary">Go to cart</button>
+                </Link>
+              ) : (
+                <button
+                  name="addToCart"
+                  value={'addToCart'}
+                  className={cls(
+                    'col-span-2 md:col-span-1 btn btn-primary',
+                    'disabled:bg-current'
+                  )}
+                  disabled={transition.state === 'submitting'}
+                  type="submit"
+                >
+                  {transition.state === 'submitting'
+                    ? 'Adding to cart...'
+                    : 'Add to cart'}
+                </button>
+              )}
             </div>
           </Form>
           {/* 4 */}
