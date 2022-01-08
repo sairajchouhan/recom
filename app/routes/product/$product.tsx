@@ -49,7 +49,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export const action: ActionFunction = async (args) => {
-  await waitFor(1.5)
   await requireUserSession(args.request)
   const method = args.request.method as keyof ActionMethods
   const actionObject = createActionObject()
