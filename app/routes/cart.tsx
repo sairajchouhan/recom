@@ -193,18 +193,18 @@ const CartPage = () => {
     <div className="min-h-[90vh]">
       {data.cartItems.length > 0 ? (
         <>
-          <h1 className="mt-5 mb-3 text-3xl font-bold text-slate-700">
+          <h1 className="mt-5 text-xl font-bold sm:text-3xl text-slate-700">
             Shopping Cart
           </h1>
-          <div className="grid grid-cols-12 gap-x-16">
-            <div className="col-span-8 ">
+          <div className="grid grid-cols-12 lg:gap-x-16">
+            <div className="col-span-12 lg:col-span-7 xl:col-span-8">
               {data.cartItems.map((cartItem) =>
                 optimisticDeleteCartItemCondition(cartItem.id) ? null : (
                   <CartItemComponent key={cartItem.id} cartItem={cartItem} />
                 )
               )}
             </div>
-            <div className="col-span-4 ">
+            <div className="col-span-12 mt-8 lg:mt-0 lg:col-span-5 xl:col-span-4">
               <Outlet
                 context={{
                   isLastItem: data.cartItems.length === 1,

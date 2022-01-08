@@ -9,9 +9,9 @@ const CartItem = ({
   const submit = useSubmit()
 
   return (
-    <div key={cartItem.id} className="pt-6 ">
+    <div key={cartItem.id} className="w-full pt-8">
       <div className="grid grid-cols-12">
-        <div className="col-span-2">
+        <div className="col-span-12 bg-green-100 sm:col-span-2">
           {/* // TODO: image url should not be null change the schema*/}
           <div className="overflow-hidden rounded-md">
             <Link to={`/product/${cartItem.product.id}?size=${cartItem.size}`}>
@@ -22,9 +22,9 @@ const CartItem = ({
             </Link>
           </div>
         </div>
-        <div className="flex flex-col col-span-10 px-6">
-          <div className="flex items-start justify-between">
-            <div>
+        <div className="flex flex-col col-span-12 px-6 sm:col-span-10">
+          <div className="flex items-start justify-between mt-4">
+            <div className="">
               <Link
                 to={`/product/${cartItem.product.id}?size=${cartItem.size}`}
               >
@@ -42,7 +42,7 @@ const CartItem = ({
               ${cartItem.product.price}
             </p>
           </div>
-          <div className="flex items-center justify-between mt-auto">
+          <div className="flex items-center justify-between mt-6 sm:mt-auto ">
             <Form
               method="post"
               action="/cart"
@@ -87,7 +87,7 @@ const CartItem = ({
           </div>
         </div>
       </div>
-      <span className="block h-[1px] bg-slate-200 mt-6"></span>
+      <span className="block h-[1px] bg-slate-200 mt-8"></span>
     </div>
   )
 }

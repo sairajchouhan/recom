@@ -76,7 +76,7 @@ const CartIndex = () => {
       </div>
 
       <div className="flex items-center justify-between text-lg font-medium">
-        <h3 className="mt-4 text-slate-700">Order Total</h3>
+        <h3 className="sm:mt-4 text-slate-700">Order Total</h3>
         <p>${data?.total}</p>
       </div>
     </div>
