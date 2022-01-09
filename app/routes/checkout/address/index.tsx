@@ -1,7 +1,7 @@
-import { Link, LoaderFunction, useLoaderData } from 'remix'
-import { getUserIdFromSession, logout } from '~/utils/server/session.server'
+import { LoaderFunction, useLoaderData } from 'remix'
 import CartSummary from '~/components/CartSummary'
 import { getCartSummary } from '~/utils/server/cart.server'
+import { getUserIdFromSession, logout } from '~/utils/server/session.server'
 
 export const loader: LoaderFunction = async ({ request }) => {
   const taxPercentage = 0.18
@@ -18,27 +18,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   return cartSummary
 }
 
-const CartIndex = () => {
+const AddressIndex = () => {
   const data = useLoaderData()
-
-  if (!data) return null
-
   return (
     <div>
       <CartSummary data={data} />
-      <Link to="/checkout/address">
-        <button className="w-full mt-6 btn btn-primary">Place Order</button>
-      </Link>
+      <button className="w-full mt-6 btn btn-primary">Place Order</button>
     </div>
   )
 }
 
-export const CatchBoundary = () => {
-  return (
-    <div className="min-h-sm bg-blue-50/70">
-      <h1>Something went wrong</h1>
-    </div>
-  )
-}
-
-export default CartIndex
+export default AddressIndex

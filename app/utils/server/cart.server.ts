@@ -1,7 +1,6 @@
 import { db } from './db.server'
 import { Prisma, Size } from '@prisma/client'
 import { redirect } from 'remix'
-import invariant from 'tiny-invariant'
 import { CartItem } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime'
 
@@ -137,7 +136,7 @@ export const updateQuantityOfCartItem = async (
   })
 }
 
-export const addProductToCart = async ({
+export const addItemToCart = async ({
   userId,
   productId,
   size,
@@ -230,4 +229,46 @@ export const addProductToCart = async ({
   })
 
   return cartItem
+}
+
+export const getCartSummary = async ({
+  userId,
+  taxPercentage,
+}: {
+  userId: string
+  taxPercentage: number
+}) => {
+  let userCart = await db.userCart.findFirst({
+    where: {
+      userId,
+    },
+  })
+
+  if (!userCart) {
+    userCart = await createUserCart({ userId })
+  }
+
+  const tax = new Prisma.Decimal(userCart.totalPrice)
+    .mul(taxPercentage)
+    .toFixed(2)
+  const deliveryCharge = new Prisma.Decimal(5).toFixed(2)
+  const totalPriceForProducts = new Prisma.Decimal(userCart.totalPrice).toFixed(
+    2
+  )
+  const total = new Prisma.Decimal(totalPriceForProducts)
+    .add(tax)
+    .add(deliveryCharge)
+    .toFixed(2)
+
+  const returnData =
+    userCart.totalItems > 0
+      ? {
+          totalItems: userCart.totalItems,
+          deliveryCharge,
+          totalPriceForProducts,
+          tax,
+          total,
+        }
+      : null
+  return returnData
 }

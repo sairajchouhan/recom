@@ -22,7 +22,7 @@ import {
   logout,
   requireUserSession,
 } from '~/utils/server/session.server'
-import { addProductToCart } from '~/utils/server/cart.server'
+import { addItemToCart } from '~/utils/server/cart.server'
 import { Size } from '@prisma/client'
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -83,21 +83,20 @@ export const action: ActionFunction = async (args) => {
         )
       }
 
-      const cartItem = await addProductToCart({
+      const cartItem = await addItemToCart({
         userId,
         productId,
         size,
       })
 
-      return json(
-        {
-          addedToCart: true,
-          size: cartItem.size,
-        },
-        {
-          status: 201,
-        }
-      )
+      const data = {
+        addedToCart: true,
+        size: cartItem.size,
+      }
+
+      return json(data, {
+        status: 201,
+      })
     }
   }
 

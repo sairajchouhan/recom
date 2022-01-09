@@ -101,11 +101,7 @@ const CartPage = () => {
               )}
             </div>
             <div className="col-span-12 mt-8 lg:mt-0 lg:col-span-5 xl:col-span-4">
-              <Outlet
-                context={{
-                  isLastItem: data.cartItems.length === 1,
-                }}
-              />
+              <Outlet />
             </div>
           </div>
         </>
