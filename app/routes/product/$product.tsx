@@ -13,15 +13,17 @@ import {
   Link,
 } from 'remix'
 import { RadioGroup } from '@headlessui/react'
-import invariant from 'tiny-invariant'
-import { CartItem } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime'
 
 import { cls, createActionObject, waitFor } from '~/utils/helpers'
 import { db } from '~/utils/server/db.server'
 import { ActionMethods } from '~/types'
-import { getAuthUser, requireUserSession } from '~/utils/server/session.server'
-import { createUserCart } from '~/utils/server/cart.server'
+import {
+  getUserIdFromSession,
+  logout,
+  requireUserSession,
+} from '~/utils/server/session.server'
+import { addProductToCart } from '~/utils/server/cart.server'
+import { Size } from '@prisma/client'
 
 export const loader: LoaderFunction = async ({ params }) => {
   const productId = params.product
@@ -50,111 +52,53 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export const action: ActionFunction = async (args) => {
   await requireUserSession(args.request)
+  const userId = await getUserIdFromSession(args.request)
+  if (!userId) {
+    return await logout(args.request)
+  }
   const method = args.request.method as keyof ActionMethods
   const actionObject = createActionObject()
 
   actionObject.POST = async ({ request, params }) => {
-    const user = await getAuthUser(request)
     const rawFormData = await request.formData()
     const formData: Record<string, any> = {}
 
     for (let [key, value] of rawFormData.entries()) {
       formData[key] = value
     }
+    const addToCart = formData.addToCart
 
-    invariant(user, 'User not found')
-    let userCart = await db.userCart.findFirst({
-      where: {
-        userId: user.id,
-      },
-      select: {
-        id: true,
-        totalItems: true,
-        totalPrice: true,
-      },
-    })
+    if (addToCart) {
+      const productId = params.product
+      const size: Size = formData.size
 
-    if (!userCart) {
-      userCart = await createUserCart({ userId: user.id })
-    }
-
-    const cartItemSearch = await db.cartItem.findMany({
-      where: {
-        productId: params.product as string,
-        userCart: {
-          id: userCart.id,
-        },
-        size: formData.size,
-      },
-    })
-
-    let cartItem:
-      | (CartItem & {
-          product: {
-            price: Decimal
+      if (!productId || !size) {
+        return json(
+          {
+            error: 'Invalid request',
+          },
+          {
+            status: 400,
           }
-        })
-      | null = null
-
-    if (cartItemSearch.length > 0) {
-      cartItem = await db.cartItem.update({
-        where: {
-          id: cartItemSearch[0].id,
-        },
-        data: {
-          quantity: {
-            increment: 1,
-          },
-        },
-        include: {
-          product: {
-            select: {
-              price: true,
-            },
-          },
-        },
-      })
-    } else {
-      cartItem = await db.cartItem.create({
-        data: {
-          productId: params.product as string,
-          userCartId: userCart.id,
-          size: formData.size,
-          quantity: 1,
-        },
-        include: {
-          product: {
-            select: {
-              price: true,
-            },
-          },
-        },
-      })
-    }
-
-    await db.userCart.update({
-      where: {
-        id: userCart.id,
-      },
-      data: {
-        totalPrice: {
-          increment: cartItem.product.price,
-        },
-        totalItems: {
-          increment: 1,
-        },
-      },
-    })
-
-    return json(
-      {
-        addedToCart: true,
-        size: cartItem.size,
-      },
-      {
-        status: 201,
+        )
       }
-    )
+
+      const cartItem = await addProductToCart({
+        userId,
+        productId,
+        size,
+      })
+
+      return json(
+        {
+          addedToCart: true,
+          size: cartItem.size,
+        },
+        {
+          status: 201,
+        }
+      )
+    }
   }
 
   if (actionObject.hasOwnProperty(method)) {
@@ -171,7 +115,6 @@ const ProductDetailPage = () => {
   const data = useLoaderData()
   const actionData = useActionData()
   const [url] = useSearchParams()
-  console.log(transition.state)
 
   const [selectedSize, setSelectedSize] = useState(
     allSizes[allSizes.indexOf(url.get('size') ?? 'M')]

@@ -1,6 +1,9 @@
 import { db } from './db.server'
-import { Prisma } from '@prisma/client'
+import { Prisma, Size } from '@prisma/client'
 import { redirect } from 'remix'
+import invariant from 'tiny-invariant'
+import { CartItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime'
 
 export const createUserCart = async ({ userId }: { userId: string }) => {
   const userCart = await db.userCart.create({
@@ -132,4 +135,99 @@ export const updateQuantityOfCartItem = async (
       totalItems: totalQuantityUpdate,
     },
   })
+}
+
+export const addProductToCart = async ({
+  userId,
+  productId,
+  size,
+}: {
+  userId: string
+  productId: string
+  size: Size
+}) => {
+  let userCart = await db.userCart.findFirst({
+    where: {
+      userId,
+    },
+    select: {
+      id: true,
+      totalItems: true,
+      totalPrice: true,
+    },
+  })
+
+  if (!userCart) {
+    userCart = await createUserCart({ userId })
+  }
+
+  const cartItemSearch = await db.cartItem.findMany({
+    where: {
+      productId,
+      userCart: {
+        id: userCart.id,
+      },
+      size,
+    },
+  })
+
+  let cartItem:
+    | (CartItem & {
+        product: {
+          price: Decimal
+        }
+      })
+    | null = null
+
+  if (cartItemSearch.length > 0) {
+    cartItem = await db.cartItem.update({
+      where: {
+        id: cartItemSearch[0].id,
+      },
+      data: {
+        quantity: {
+          increment: 1,
+        },
+      },
+      include: {
+        product: {
+          select: {
+            price: true,
+          },
+        },
+      },
+    })
+  } else {
+    cartItem = await db.cartItem.create({
+      data: {
+        productId,
+        userCartId: userCart.id,
+        size: size,
+        quantity: 1,
+      },
+      include: {
+        product: {
+          select: {
+            price: true,
+          },
+        },
+      },
+    })
+  }
+
+  await db.userCart.update({
+    where: {
+      id: userCart.id,
+    },
+    data: {
+      totalPrice: {
+        increment: cartItem.product.price,
+      },
+      totalItems: {
+        increment: 1,
+      },
+    },
+  })
+
+  return cartItem
 }
