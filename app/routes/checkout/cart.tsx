@@ -8,13 +8,17 @@ import {
   useLoaderData,
   useTransition,
 } from 'remix'
+import type { CartItem, Product } from '@prisma/client'
+
 import { ActionMethods } from '~/types'
 import { createActionObject } from '~/utils/helpers'
-import { db } from '~/utils/server/db.server'
 import { getUserIdFromSession, logout } from '~/utils/server/session.server'
-import type { CartItem, Product } from '@prisma/client'
 import CartItemComponent from '~/components/CartItem'
-import { Prisma } from '@prisma/client'
+import {
+  getCartItems,
+  removeCartItem,
+  updateQuantityOfCartItem,
+} from '~/utils/server/cart.server'
 interface LoaderData {
   cartItems: (CartItem & {
     product: Product
@@ -26,19 +30,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!userId) {
     return await logout(request)
   }
-  const cartItems = await db.cartItem.findMany({
-    where: {
-      userCart: {
-        userId,
-      },
-    },
-    include: {
-      product: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
+
+  const cartItems = await getCartItems(userId)
 
   return json({
     cartItems,
@@ -60,110 +53,13 @@ export const action: ActionFunction = (args) => {
     const quantity = Number(formData.quantity)
 
     if (toRemoveCartItemId) {
-      const removedCartItem = await db.cartItem.delete({
-        where: {
-          id: toRemoveCartItemId,
-        },
-        include: {
-          product: {
-            select: {
-              price: true,
-            },
-          },
-        },
-      })
-
-      await db.userCart.update({
-        where: {
-          id: removedCartItem.userCartId,
-        },
-        data: {
-          totalPrice: {
-            decrement: new Prisma.Decimal(removedCartItem.product.price).mul(
-              removedCartItem.quantity
-            ),
-          },
-          totalItems: {
-            decrement: removedCartItem.quantity,
-          },
-        },
-      })
-
+      await removeCartItem(toRemoveCartItemId)
       return redirect('/checkout/cart')
     }
 
     if (quantity) {
       const cartId = formData.cartId
-
-      const previousCartItem = await db.cartItem.findUnique({
-        where: {
-          id: cartId,
-        },
-        select: {
-          quantity: true,
-        },
-      })
-
-      if (!previousCartItem) {
-        return redirect('/checkout/cart')
-      }
-
-      const updatedCartItem = await db.cartItem.update({
-        where: {
-          id: cartId,
-        },
-        data: {
-          quantity,
-        },
-        include: {
-          product: {
-            select: {
-              price: true,
-            },
-          },
-        },
-      })
-
-      const changeInQuantity =
-        updatedCartItem.quantity - previousCartItem.quantity
-
-      let totalPriceUpdate: any = {}
-      let totalQuantityUpdate: any = {}
-
-      if (changeInQuantity > 0) {
-        totalPriceUpdate = {
-          increment: new Prisma.Decimal(updatedCartItem.product.price).mul(
-            changeInQuantity
-          ),
-        }
-        totalQuantityUpdate = {
-          increment: changeInQuantity,
-        }
-      }
-      if (changeInQuantity < 0) {
-        totalPriceUpdate = {
-          decrement: new Prisma.Decimal(updatedCartItem.product.price)
-            .mul(changeInQuantity)
-            .mul(-1),
-        }
-        totalQuantityUpdate = {
-          decrement: -1 * changeInQuantity,
-        }
-      }
-
-      if (changeInQuantity === 0) {
-        return redirect('/checkout/cart')
-      }
-
-      await db.userCart.update({
-        where: {
-          id: updatedCartItem.userCartId,
-        },
-        data: {
-          totalPrice: totalPriceUpdate,
-          totalItems: totalQuantityUpdate,
-        },
-      })
+      await updateQuantityOfCartItem(cartId, quantity)
 
       return redirect('/checkout/cart')
     }
