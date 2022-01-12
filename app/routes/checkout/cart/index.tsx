@@ -27,7 +27,7 @@ const CartIndex = () => {
     <div>
       <CartSummary data={data} />
       <Link to="/checkout/address">
-        <button className="w-full mt-6 btn btn-primary">Place Order</button>
+        <button className="w-full mt-6 btn btn-primary">Select Address</button>
       </Link>
     </div>
   )
