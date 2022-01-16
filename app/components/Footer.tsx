@@ -34,7 +34,7 @@ const Footer = () => {
           <div className="flex justify-between w-full space-x-4 sm:w-auto">
             <a
               className="btn btn-square btn-ghost hover:bg-zinc-100 text-zinc-600"
-              href="https://twitter.com/sairaj_chouhan"
+              href="https://twitter.com/sairajchouhan"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -49,7 +49,7 @@ const Footer = () => {
               <Youtube />
             </a>
             <a
-              href="https://github.com/sairaj2119"
+              href="https://github.com/sairajchouhan"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-square btn-ghost hover:bg-zinc-100 text-zinc-600"
